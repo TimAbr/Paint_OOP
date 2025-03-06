@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <WebView2EnableCsWinRTProjection>False</WebView2EnableCsWinRTProjection>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\iconEllipse.png" />
+    <None Remove="Resources\iconLine.png" />
+    <None Remove="Resources\iconMult.png" />
+    <None Remove="Resources\iconPol.png" />
+    <None Remove="Resources\iconRect.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25103.5738" />
+    <PackageReference Include="Microsoft.Maui.Controls.Xaml" Version="9.0.40" />
+    <PackageReference Include="Microsoft.UI.Xaml" Version="2.8.7" />
+    <PackageReference Include="Syncfusion.Core.WinUI" Version="28.2.7" />
+    <PackageReference Include="Syncfusion.Editors.WinUI" Version="28.2.7" />
+    <PackageReference Include="System.Runtime.WindowsRuntime.UI.Xaml" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\iconEllipse.png" />
+    <Resource Include="Resources\iconLine.png" />
+    <Resource Include="Resources\iconMult.png" />
+    <Resource Include="Resources\iconPol.png" />
+    <Resource Include="Resources\iconRect.png" />
+  </ItemGroup>
+
+</Project>
