@@ -48,7 +48,7 @@ public partial class MainWindow : Window
         setColorList();
 
         Type ourtype = typeof(Shape); // Базовый тип
-        shapeTypeList = Assembly.GetAssembly(ourtype).GetTypes().Where(type => type.IsSubclassOf(ourtype)).ToArray<Type>();
+        shapeTypeList = Assembly.GetAssembly(ourtype).GetTypes().Where(type => type.IsSubclassOf(ourtype) && !type.IsAbstract).ToArray<Type>();
         shapeButtons = new ToggleButton[shapeTypeList.Length];
 
         setShapeButtons();
@@ -56,14 +56,21 @@ public partial class MainWindow : Window
         chosenEllipse.Stroke = Brushes.LightSteelBlue;
         chosenEllipse.StrokeThickness = 2;
         fillEllipse.StrokeThickness = 0;
-
     }
 
     private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
     {
+
         if (curShape >= 0)
         {
-            Draw.onMouseDown(e);
+            if (shapeTypeList[curShape].IsSubclassOf(typeof(PointShape)))
+            {
+                
+            }
+            else
+            {
+                Draw.onMouseDown(e);
+            }
         }
     }
     private void CanvasMouseUp(object sender, MouseButtonEventArgs e)
@@ -76,12 +83,28 @@ public partial class MainWindow : Window
             s.borderColor = borderEllipse.Fill;
             s.fillColor = fillEllipse.Fill;
             s.lineWidth = 1;
-            ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 5).First();
-            System.Windows.UIElement? tempShape = Draw.onMouseUp(x, y, constructor, s);
-            if (tempShape != null)
+
+            if (shapeTypeList[curShape].IsSubclassOf(typeof(PointShape)))
             {
-                tempShape.MouseUp -= new MouseButtonEventHandler(CanvasMouseUp);
+                ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 3).First();
+                System.Windows.UIElement? tempShape = Draw.onPolyMouseUp(x, y, constructor, s);
+
+                if (tempShape != null)
+                {
+                    tempShape.MouseUp -= new MouseButtonEventHandler(CanvasMouseUp);
+                }
             }
+            else
+            {
+
+                ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 5).First();
+                System.Windows.UIElement? tempShape = Draw.onMouseUp(x, y, constructor, s);
+                if (tempShape != null)
+                {
+                    tempShape.MouseUp -= new MouseButtonEventHandler(CanvasMouseUp);
+                }
+            }
+            
         }
     }
     private void CanvasMouseMove(object sender, MouseEventArgs e)
@@ -94,11 +117,25 @@ public partial class MainWindow : Window
             s.borderColor = borderEllipse.Fill;
             s.fillColor = fillEllipse.Fill;
             s.lineWidth = 1;
-            ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 5).First();
-            System.Windows.UIElement? tempShape = Draw.onMouseMove(x, y, constructor, s);
-            if (tempShape != null)
+
+            if (shapeTypeList[curShape].IsSubclassOf(typeof(PointShape))) 
             {
-                tempShape.MouseUp += new MouseButtonEventHandler(CanvasMouseUp);
+
+                ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 3).First();
+                System.Windows.UIElement? tempShape = Draw.onPolyMouseMove(x, y, constructor, s);
+                if (tempShape != null)
+                {
+                    tempShape.MouseUp += new MouseButtonEventHandler(CanvasMouseUp);
+                }
+            }
+            else
+            {
+                ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 5).First();
+                System.Windows.UIElement? tempShape = Draw.onMouseMove(x, y, constructor, s);
+                if (tempShape != null)
+                {
+                    tempShape.MouseUp += new MouseButtonEventHandler(CanvasMouseUp);
+                }
             }
         }
     }

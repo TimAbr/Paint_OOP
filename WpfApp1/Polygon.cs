@@ -15,14 +15,14 @@ namespace WpfApp1
         public int Num { get => num; set{ num = value; setPoints(x, y, width, height, num); } }
         private void setPoints(int x, int y, int width, int height, int num)
         {
-            // Центр ограничивающего прямоугольника
+
             double centerX = x + width / 2.0;
             double centerY = y + height / 2.0;
 
-            // Генерируем вершины в нормализованном виде (радиус = 1)
+
             List<System.Windows.Point> normalizedPoints = new List<System.Windows.Point>();
             double angleStep = 2 * Math.PI / num;
-            double initialAngle = -Math.PI / 2; // Первая вершина сверху
+            double initialAngle = -Math.PI / 2; 
 
             for (int i = 0; i < num; i++)
             {
@@ -32,17 +32,16 @@ namespace WpfApp1
                 normalizedPoints.Add(new System.Windows.Point(xNormalized, yNormalized));
             }
 
-            // Находим границы Bounding Box
+
             double minX = normalizedPoints.Min(p => p.X);
             double maxX = normalizedPoints.Max(p => p.X);
             double minY = normalizedPoints.Min(p => p.Y);
             double maxY = normalizedPoints.Max(p => p.Y);
 
-            // Вычисляем масштабные коэффициенты
+
             double scaleX = width / (maxX - minX);
             double scaleY = height / (maxY - minY);
 
-            // Масштабируем и смещаем точки
             foreach (var point in normalizedPoints)
             {
                 double xScaled = (point.X - minX) * scaleX + x;
