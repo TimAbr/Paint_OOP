@@ -38,6 +38,8 @@ public partial class MainWindow : Window
         B = 0x27
     });
 
+    Ellipse chosenEllipse;
+
 
     public MainWindow()
     {
@@ -50,8 +52,10 @@ public partial class MainWindow : Window
         shapeButtons = new ToggleButton[shapeTypeList.Length];
 
         setShapeButtons();
-
-
+        chosenEllipse = borderEllipse;
+        chosenEllipse.Stroke = Brushes.LightSteelBlue;
+        chosenEllipse.StrokeThickness = 2;
+        fillEllipse.StrokeThickness = 0;
 
     }
 
@@ -69,6 +73,9 @@ public partial class MainWindow : Window
             ShapeSettings s = new ShapeSettings();
             int x = (int)e.GetPosition(mainCanvas).X;
             int y = (int)e.GetPosition(mainCanvas).Y;
+            s.borderColor = borderEllipse.Fill;
+            s.fillColor = fillEllipse.Fill;
+            s.lineWidth = 1;
             ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 5).First();
             System.Windows.UIElement? tempShape = Draw.onMouseUp(x, y, constructor, s);
             if (tempShape != null)
@@ -84,6 +91,9 @@ public partial class MainWindow : Window
             ShapeSettings s = new ShapeSettings();
             int x = (int)e.GetPosition(mainCanvas).X;
             int y = (int)e.GetPosition(mainCanvas).Y;
+            s.borderColor = borderEllipse.Fill;
+            s.fillColor = fillEllipse.Fill;
+            s.lineWidth = 1;
             ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 5).First();
             System.Windows.UIElement? tempShape = Draw.onMouseMove(x, y, constructor, s);
             if (tempShape != null)
@@ -136,6 +146,7 @@ public partial class MainWindow : Window
                     el.Margin = new Thickness(0, 0, horMargin, vertMargin);
                 }
             }
+            el.MouseDown += new MouseButtonEventHandler(colorMouseDown);
             colorList.Children.Add(el);
         }
     }
@@ -209,10 +220,23 @@ public partial class MainWindow : Window
 
     private void colorMouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (curShape >= 0)
-        {
-            Draw.onMouseDown(e);
-        }
+        chosenEllipse.Fill = ((Ellipse)sender).Fill;
     }
+
+    private void chooseBorder(object sender, MouseButtonEventArgs e)
+    {
+        chosenEllipse = borderEllipse;
+        chosenEllipse.Stroke = Brushes.LightSteelBlue;
+        chosenEllipse.StrokeThickness = 2;
+        fillEllipse.StrokeThickness = 0;
+    }
+    private void chooseFill(object sender, MouseButtonEventArgs e)
+    {
+        chosenEllipse = fillEllipse;
+        chosenEllipse.Stroke = Brushes.LightSteelBlue;
+        chosenEllipse.StrokeThickness = 2;
+        borderEllipse.StrokeThickness = 0;
+    }
+
 
 }

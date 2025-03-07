@@ -57,9 +57,9 @@
 
 
 
-                    <Ellipse Name ="borderEllipse" Grid.Row="0" Grid.Column="0" Height="25" Width="25" Fill="Black" Stroke="LightSteelBlue" StrokeThickness="2" Margin="5 9 5 5" VerticalAlignment="Center"/>
+                    <Ellipse Name ="borderEllipse" Grid.Row="0" Grid.Column="0" Height="25" Width="25" Fill="Black" Stroke="LightSteelBlue" StrokeThickness="2" Margin="5 9 5 5" VerticalAlignment="Center" PreviewMouseDown="chooseBorder"/>
 
-                    <Ellipse Name ="fillEllipse" Grid.Row="1" Grid.Column="0" Height="25" Width="25" Fill="White" Stroke="LightSteelBlue" StrokeThickness="2" Margin="5 5 5 9" VerticalAlignment="Center"/>
+                    <Ellipse Name ="fillEllipse" Grid.Row="1" Grid.Column="0" Height="25" Width="25" Fill="White" Stroke="LightSteelBlue" StrokeThickness="2" Margin="5 5 5 9" VerticalAlignment="Center" PreviewMouseDown="chooseFill"/>
 
 
 

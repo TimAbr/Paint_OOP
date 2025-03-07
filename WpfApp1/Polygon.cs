@@ -12,39 +12,44 @@ namespace WpfApp1
 
         protected PointCollection pointCollection = new PointCollection();
         protected int num;
-        public int Num { get => num; set{ num = value; setPoints(x, y, width, num); } }
-        private void setPoints(int x, int y, int width, int num)
+        public int Num { get => num; set{ num = value; setPoints(x, y, width, height, num); } }
+        private void setPoints(int x, int y, int width, int height, int num)
         {
-            double oX = x + ((double)width) / 2, oY = y + ((double)height) / 2;
-            double y1 = y;
-            double x1;
-            if (num % 2 == 1)
-            {
-                x1 = x + ((double)width) / 2;
-            }
-            else
-            {
-                x1 = x + (width - height * Math.Tan(Math.Acos(-1) / num)) / 2;
-            }
-            pointCollection.Add(new System.Windows.Point(x1, y1));
+            // Центр ограничивающего прямоугольника
+            double centerX = x + width / 2.0;
+            double centerY = y + height / 2.0;
 
-            double radNextX = x1 - oX, radNextY = y1 - oY;
-            double xCur, yCur;
-            double polarX, polarY;
-            double tempX, tempY;
+            // Генерируем вершины в нормализованном виде (радиус = 1)
+            List<System.Windows.Point> normalizedPoints = new List<System.Windows.Point>();
+            double angleStep = 2 * Math.PI / num;
+            double initialAngle = -Math.PI / 2; // Первая вершина сверху
 
-            for (int i = 0; i < num - 1; ++i)
+            for (int i = 0; i < num; i++)
             {
-                polarX = 1 * Math.Cos(Math.Acos(-1.0) * 2 / num);
-                polarY = 1 * Math.Sin(Math.Acos(-1.0) * 2 / num);
-                tempX = radNextX * polarX - radNextY * polarY;
-                tempY = radNextX * polarY + radNextY * polarX;
-                radNextX = tempX;
-                radNextY = tempY;
-                xCur = oX + radNextX;
-                yCur = oY + radNextY;
-                pointCollection.Add(new System.Windows.Point(xCur, yCur));
+                double angle = initialAngle + i * angleStep;
+                double xNormalized = Math.Cos(angle);
+                double yNormalized = Math.Sin(angle);
+                normalizedPoints.Add(new System.Windows.Point(xNormalized, yNormalized));
             }
+
+            // Находим границы Bounding Box
+            double minX = normalizedPoints.Min(p => p.X);
+            double maxX = normalizedPoints.Max(p => p.X);
+            double minY = normalizedPoints.Min(p => p.Y);
+            double maxY = normalizedPoints.Max(p => p.Y);
+
+            // Вычисляем масштабные коэффициенты
+            double scaleX = width / (maxX - minX);
+            double scaleY = height / (maxY - minY);
+
+            // Масштабируем и смещаем точки
+            foreach (var point in normalizedPoints)
+            {
+                double xScaled = (point.X - minX) * scaleX + x;
+                double yScaled = (point.Y - minY) * scaleY + y;
+                pointCollection.Add(new System.Windows.Point(xScaled, yScaled));
+            };
+            
         }
 
 
@@ -69,16 +74,16 @@ namespace WpfApp1
             x = x1;
             y = y1;
             width = Math.Abs(x2 - x1);
-            height = width;
+            height = Math.Abs(y2 - y1);
 
-            setPoints(x, y, width, num);
+            setPoints(x, y, width, height, num);
         }
 
         public MyPolygon(Canvas canvas, int x, int y, int width)
             : base(canvas, x, y, width)
         {
             num = 5;
-            setPoints(x, y, width, 5);
+            setPoints(x, y, width, height, 5);
         }
 
         override public System.Windows.UIElement draw()

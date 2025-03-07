@@ -53,14 +53,18 @@ namespace WpfApp1
 
         public struct ShapeSettings
         {
-            Color penColor;
-            Color brushColor;
-            int lineWidth;
+            public Brush borderColor;
+            public Brush fillColor;
+            public int lineWidth;
         }
 
         private static void setShape(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
         {
-            tempShape = ((Shape)constructor.Invoke(new object[] {mainCanvas, xStart, yStart, xFinish, yFinish})).draw();
+            Shape temp = (Shape)constructor.Invoke(new object[] { mainCanvas, xStart, yStart, xFinish, yFinish });
+            temp.Pen.Brush = s.borderColor;
+            temp.Pen.Thickness = s.lineWidth;
+            temp.Brush = s.fillColor;
+            tempShape = (temp).draw();
         }
 
     
