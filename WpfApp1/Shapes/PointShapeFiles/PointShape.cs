@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace WpfApp1
+namespace WpfApp1.PointShapeFiles
 {
+
+    
     public abstract class PointShape: Shape
     {
         protected void setPoints(int x, int y, int width, int height, int num)
@@ -51,7 +53,7 @@ namespace WpfApp1
 
         public bool AddPoint(int x, int y)
         {
-            bool flag = num > 2 && (x >= pointCollection[num - 2].X-2 && x <= pointCollection[num - 2].X+2 && y >= pointCollection[num - 2].Y-2 && y <= pointCollection[num - 2].Y+2);
+            bool flag = num > 2 && x >= pointCollection[num - 2].X-2 && x <= pointCollection[num - 2].X+2 && y >= pointCollection[num - 2].Y-2 && y <= pointCollection[num - 2].Y+2;
             pointCollection.Add(new System.Windows.Point(x, y));
             num++;
             return flag;
@@ -71,7 +73,7 @@ namespace WpfApp1
             : base(canvas, x, y, width)
         {
             this.width = width;
-            this.height = width;
+            height = width;
             this.x = x;
             this.y = y;
             if (width > 0)
@@ -82,8 +84,8 @@ namespace WpfApp1
                 Random rnd = new Random();
                 for (int i = 0; i < num; i++)
                 {
-                    int x1 = pointCollection[i].X - 2 <= x ? x + rnd.Next(1, width / (num)) : pointCollection[i].X + 2 >= x + width - 1 ? x + width - rnd.Next(1, width / (num)) : (int)pointCollection[i].X + rnd.Next(-width / (num), width / (num) + 1);
-                    int y1 = pointCollection[i].Y - 2 <= y ? y + rnd.Next(1, height / (num)) : pointCollection[i].Y + 2 >= y + height - 1 ? y + height - rnd.Next(1, height / (num)) : (int)pointCollection[i].Y + rnd.Next(-height / (num), height / (num) + 1);
+                    int x1 = pointCollection[i].X - 2 <= x ? x + rnd.Next(1, width / num) : pointCollection[i].X + 2 >= x + width - 1 ? x + width - rnd.Next(1, width / num) : (int)pointCollection[i].X + rnd.Next(-width / num, width / num + 1);
+                    int y1 = pointCollection[i].Y - 2 <= y ? y + rnd.Next(1, height / num) : pointCollection[i].Y + 2 >= y + height - 1 ? y + height - rnd.Next(1, height / num) : (int)pointCollection[i].Y + rnd.Next(-height / num, height / num + 1);
                     pointCollection[i] = new System.Windows.Point(x1, y1);
                 }
             }

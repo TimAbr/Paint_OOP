@@ -5,9 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace WpfApp1.FrameShapeFiles
 {
-    public class MyEllipse : Shape
+    public class MyEllipse : FrameShape
     {
 
         public MyEllipse(Canvas canvas, int x1, int y1, int x2, int y2)
@@ -39,19 +39,13 @@ namespace WpfApp1
 
         }
 
-        override public System.Windows.UIElement draw()
+        override public UIElement draw()
         {
             
             Ellipse tr = new Ellipse();
             tr.Width = width;
             tr.Height = height;
-                               
-            tr.Fill = brush;
-            tr.Stroke = pen.Brush;
-            tr.StrokeDashArray = pen.DashStyle.Dashes;
-            tr.StrokeThickness = pen.Thickness;
-            tr.StrokeDashCap = pen.DashCap;
-
+            init(tr, pen, brush);    
             canvas.Children.Add(tr);
             Canvas.SetLeft(tr, x);
             Canvas.SetTop(tr, y);

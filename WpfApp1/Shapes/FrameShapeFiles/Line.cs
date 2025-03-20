@@ -5,9 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace WpfApp1.FrameShapeFiles
 {
-    public class MyLine : Shape
+    public class MyLine : FrameShape
     {
 
         public MyLine(Canvas canvas, int x1, int y1, int x2, int y2)
@@ -21,7 +21,7 @@ namespace WpfApp1
 
         }
 
-        override public System.Windows.UIElement draw()
+        override public UIElement draw()
         {
 
             Line tr = new Line();
@@ -29,7 +29,7 @@ namespace WpfApp1
             tr.Y1 = y;
             tr.X2 = width;
             tr.Y2 = height;
-            tr.Stroke = pen.Brush;
+            init(tr, pen, brush);
 
             canvas.Children.Add(tr);
 

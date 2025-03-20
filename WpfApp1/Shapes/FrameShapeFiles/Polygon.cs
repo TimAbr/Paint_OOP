@@ -5,9 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace WpfApp1.FrameShapeFiles
 {
-    public class MyPolygon : Shape
+    public class MyPolygon : FrameShape
     {
 
         protected PointCollection pointCollection = new PointCollection();
@@ -85,18 +85,13 @@ namespace WpfApp1
             setPoints(x, y, width, height, 5);
         }
 
-        override public System.Windows.UIElement draw()
+        override public UIElement draw()
         {
 
             Polygon tr = new Polygon();
-  
             tr.Points = pointCollection;
-            tr.Fill = brush;
-            tr.Stroke = pen.Brush;
-            tr.StrokeDashArray = pen.DashStyle.Dashes;
-            tr.StrokeThickness = pen.Thickness;
-            tr.StrokeDashCap = pen.DashCap;
-               
+            init(tr, pen, brush);
+
             canvas.Children.Add(tr);
 
             return tr;

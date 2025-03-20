@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace WpfApp1.PointShapeFiles
 {
     class MyCustomPolygon: PointShape
     {
@@ -16,9 +16,7 @@ namespace WpfApp1
         public MyCustomPolygon(Canvas canvas, int x, int y, int width)
             : base(canvas, x, y, width)
         {
-        
-
-            
+  
         }
 
         public MyCustomPolygon(Canvas canvas, int x, int y)
@@ -37,11 +35,7 @@ namespace WpfApp1
             Polygon tr = new Polygon();
 
             tr.Points = pointCollection;
-            tr.Fill = brush;
-            tr.Stroke = pen.Brush;
-            tr.StrokeDashArray = pen.DashStyle.Dashes;
-            tr.StrokeThickness = pen.Thickness;
-            tr.StrokeDashCap = pen.DashCap;
+            init(tr, pen, brush);
 
             canvas.Children.Add(tr);
 

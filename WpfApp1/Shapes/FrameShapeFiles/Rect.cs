@@ -4,9 +4,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace WpfApp1.FrameShapeFiles
 {
-    public class MyRect : Shape
+    public class MyRect : FrameShape
     {
 
         public MyRect(Canvas canvas, int x1, int y1, int x2, int y2)
@@ -37,17 +37,13 @@ namespace WpfApp1
 
         }
 
-        override public System.Windows.UIElement draw()
+        override public UIElement draw()
         {
             Rectangle tr = new Rectangle();
             tr.Width = width;
             tr.Height = height;
 
-            tr.Fill = brush;
-            tr.Stroke = pen.Brush;
-            tr.StrokeDashArray = pen.DashStyle.Dashes;
-            tr.StrokeThickness = pen.Thickness;
-            tr.StrokeDashCap = pen.DashCap;
+            init(tr, pen, brush);
 
             canvas.Children.Add(tr);
             Canvas.SetLeft(tr, x);

@@ -9,22 +9,29 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static WpfApp1.MyPolygon;
+using static WpfApp1.FrameShapeFiles.MyPolygon;
 using static WpfApp1.Draw;
 using static Microsoft.Maui.ApplicationModel.Permissions;
 using System.Collections.ObjectModel;
 using Xceed.Wpf.AvalonDock.Controls;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Globalization;
 
 namespace WpfApp1;
+using PointShapeFiles;
+using UI;
 
 public partial class MainWindow : Window
 {
   
     private ToggleButton[] shapeButtons;
-    
+    private ToggleButton[] widthButtons;
+
     private int curShape = -1;
+    private int curWidth = 0;
+
+    private double[] allStrokeWidths = { 1, 1.5, 2, 3, 5};
     
     private Color[] allColors = { Colors.Red, Colors.LightGray, Colors.Green, Colors.LightGray, Colors.LightGreen, Colors.DarkGray, Colors.LightBlue, Colors.LavenderBlush, Colors.LightCoral, Colors.White, Colors.Black };
     
@@ -40,18 +47,29 @@ public partial class MainWindow : Window
 
     Ellipse chosenEllipse;
 
+    bool widthPopUpVisible = false;
+    
+    public void widthListButtonMouthDown(object sender, RoutedEventArgs e)
+    {
+        widthPopUpVisible = !widthPopUpVisible;
+        DropdownPopup.IsOpen = widthPopUpVisible;
+    }
+
 
     public MainWindow()
     {
         InitializeComponent();
 
-        setColorList();
+        FillUIElements.setColorList(colorList,allColors, new MouseButtonEventHandler(colorMouseDown));
+
+        widthButtons = new ToggleButton[allStrokeWidths.Length];
+        FillUIElements.setDropdownPopup(DropdownPopup,allStrokeWidths, widthButtons, new RoutedEventHandler(widthButtonClick), curWidth);
 
         Type ourtype = typeof(Shape); // Базовый тип
         shapeTypeList = Assembly.GetAssembly(ourtype).GetTypes().Where(type => type.IsSubclassOf(ourtype) && !type.IsAbstract).ToArray<Type>();
         shapeButtons = new ToggleButton[shapeTypeList.Length];
 
-        setShapeButtons();
+        FillUIElements.setShapeButtons(shapeButtonList,shapeTypeList,shapeButtons, new RoutedEventHandler(ShapeButtonClick));
         chosenEllipse = borderEllipse;
         chosenEllipse.Stroke = Brushes.LightSteelBlue;
         chosenEllipse.StrokeThickness = 2;
@@ -73,6 +91,7 @@ public partial class MainWindow : Window
             }
         }
     }
+
     private void CanvasMouseUp(object sender, MouseButtonEventArgs e)
     {
         if (curShape >= 0)
@@ -82,7 +101,7 @@ public partial class MainWindow : Window
             int y = (int)e.GetPosition(mainCanvas).Y;
             s.borderColor = borderEllipse.Fill;
             s.fillColor = fillEllipse.Fill;
-            s.lineWidth = 1;
+            s.lineWidth = allStrokeWidths[curWidth];
 
             if (shapeTypeList[curShape].IsSubclassOf(typeof(PointShape)))
             {
@@ -96,7 +115,6 @@ public partial class MainWindow : Window
             }
             else
             {
-
                 ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 5).First();
                 System.Windows.UIElement? tempShape = Draw.onMouseUp(x, y, constructor, s);
                 if (tempShape != null)
@@ -116,7 +134,7 @@ public partial class MainWindow : Window
             int y = (int)e.GetPosition(mainCanvas).Y;
             s.borderColor = borderEllipse.Fill;
             s.fillColor = fillEllipse.Fill;
-            s.lineWidth = 1;
+            s.lineWidth = allStrokeWidths[curWidth];
 
             if (shapeTypeList[curShape].IsSubclassOf(typeof(PointShape))) 
             {
@@ -140,99 +158,7 @@ public partial class MainWindow : Window
         }
     }
 
-
-    private void setColorList()
-    {
-        
-        int colorPickerSize = 15;
-        int colorPickerFieldWidth = 140;
-        colorList.Width = colorPickerFieldWidth;
-        
-        int colorPickerFieldHeight = 25 * 2 + (80 - 7 * 2 - 25 * 2) / 2;
-        colorList.Height = 80;
-
-        double startMargin = ((double)(80 - colorPickerFieldHeight - 7 * 2)) / 2;
-        int minHorMargin = 10;
-
-
-        int numCol = colorPickerFieldWidth / (colorPickerSize + minHorMargin);
-        double horMargin = ((double)(colorPickerFieldWidth - numCol * colorPickerSize)) / numCol;
-        int numRow = allColors.Length / numCol + (allColors.Length % numCol == 0 ? 0 : 1);
-        double vertMargin = ((double)(colorPickerFieldHeight - numRow * colorPickerSize)) / (numRow == 1 ? 1 : numRow - 1);
-
-        for (int i = 0; i < allColors.Length; i++)
-        {
-            Ellipse el = new Ellipse();
-            el.Height = colorPickerSize;
-            el.Width = colorPickerSize;
-            el.Fill = new SolidColorBrush(allColors[i]);
-            el.Stroke = new SolidColorBrush(allColors[i]);
-            el.StrokeThickness = 1;
-            if (numRow == 1)
-            {
-                el.Margin = new Thickness(0, vertMargin / 2, horMargin, vertMargin / 2);
-            }
-            else
-            {
-                if (i < numCol)
-                {
-                    el.Margin = new Thickness(0, startMargin, horMargin, vertMargin);
-                }
-                else
-                {
-                    el.Margin = new Thickness(0, 0, horMargin, vertMargin);
-                }
-            }
-            el.MouseDown += new MouseButtonEventHandler(colorMouseDown);
-            colorList.Children.Add(el);
-        }
-    }
-
-    private void setShapeButtons()
-    {
-
-        int shapeButtonSize = 20;
-        int shapeButtonrFieldWidth = 141;
-
-        int minHorMargin = 2;
-
-        int numCol = shapeButtonrFieldWidth / (shapeButtonSize + minHorMargin);
-        double horMargin = ((double)(shapeButtonrFieldWidth - numCol * shapeButtonSize)) / numCol;
-        double vertMargin = 2;
-
-        for (int i = 0; i < shapeTypeList.Length; i++)
-        {
-            ToggleButton el = new ToggleButton();
-            el.Height = shapeButtonSize;
-            el.Width = shapeButtonSize;
-            el.BorderBrush = mainColorBrush;
-            el.Background = mainColorBrush;
-
-            
-            Canvas cnv = new Canvas();
-            cnv.Width = 18;
-            cnv.Height = 18;
-
-            cnv.Background = mainColorBrush;
-
-            el.Padding = new Thickness(0);
-            el.Margin = new Thickness(horMargin, vertMargin, 0, 0);
-
-            ConstructorInfo constructor = shapeTypeList[i].GetConstructors().Where(_ => _.GetParameters().Length == 4).First();
-
-            Shape temp = (Shape) constructor.Invoke(new object[] { cnv, 1, 1, 16});
-            temp.Brush = mainColorBrush;
-            temp.Pen = new Pen();
-            temp.Pen.Brush = Brushes.LightGray;
-            temp.draw();
-
-            el.Content = cnv;
-            shapeButtons[i] = el;
-            el.Click += new RoutedEventHandler(ShapeButtonClick);
-
-            shapeButtonList.Children.Add(el);
-        }
-    }
+    
 
     private void ShapeButtonClick(object sender, RoutedEventArgs e)
     {
@@ -245,6 +171,22 @@ public partial class MainWindow : Window
             } else
             {
                 shapeButtons[i].IsChecked = false;
+            }
+        }
+    }
+
+    private void widthButtonClick(object sender, RoutedEventArgs e)
+    {
+        for (int i = 0; i < allStrokeWidths.Length; i++)
+        {
+            if (widthButtons[i] == (ToggleButton)sender)
+            {
+                curWidth = i;
+                widthButtons[i].IsChecked = true;
+            }
+            else
+            {
+                widthButtons[i].IsChecked = false;
             }
         }
     }
@@ -267,12 +209,34 @@ public partial class MainWindow : Window
         chosenEllipse.StrokeThickness = 2;
         fillEllipse.StrokeThickness = 0;
     }
+    
     private void chooseFill(object sender, MouseButtonEventArgs e)
     {
         chosenEllipse = fillEllipse;
         chosenEllipse.Stroke = Brushes.LightSteelBlue;
         chosenEllipse.StrokeThickness = 2;
         borderEllipse.StrokeThickness = 0;
+    }
+
+    private void OpenCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        Shortcuts.Shortcuts.Open();
+    }
+    private void SaveCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        Shortcuts.Shortcuts.Save();
+    }
+    private void UndoCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        Shortcuts.Shortcuts.Undo();
+    }
+    private void RedoCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        Shortcuts.Shortcuts.Redo();
+    }
+    private void NewFileCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        Shortcuts.Shortcuts.NewFile();
     }
 
 

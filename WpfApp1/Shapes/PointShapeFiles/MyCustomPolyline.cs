@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace WpfApp1.PointShapeFiles
 {
     class MyCustomPolyline : PointShape
     {
@@ -38,17 +38,14 @@ namespace WpfApp1
             Polyline tr = new Polyline();
 
             tr.Points = pointCollection;
-            tr.Fill = new SolidColorBrush(new Color
+            brush = new SolidColorBrush(new Color
             {
                 A = 0,
                 R = 0x27,
                 G = 0x27,
                 B = 0x27
             });
-            tr.Stroke = pen.Brush;
-            tr.StrokeDashArray = pen.DashStyle.Dashes;
-            tr.StrokeThickness = pen.Thickness;
-            tr.StrokeDashCap = pen.DashCap;
+            init(tr, pen, brush);
 
             canvas.Children.Add(tr);
 

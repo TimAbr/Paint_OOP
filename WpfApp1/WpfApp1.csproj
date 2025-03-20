@@ -15,14 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\iconEllipse.png" />
-    <None Remove="Resources\iconLine.png" />
-    <None Remove="Resources\iconMult.png" />
-    <None Remove="Resources\iconPol.png" />
-    <None Remove="Resources\iconRect.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25103.5738" />
     <PackageReference Include="Microsoft.Maui.Controls.Xaml" Version="9.0.40" />
     <PackageReference Include="Microsoft.UI.Xaml" Version="2.8.7" />
@@ -32,11 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\iconEllipse.png" />
-    <Resource Include="Resources\iconLine.png" />
-    <Resource Include="Resources\iconMult.png" />
-    <Resource Include="Resources\iconPol.png" />
-    <Resource Include="Resources\iconRect.png" />
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

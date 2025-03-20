@@ -11,12 +11,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using WpfApp1;
+
 
 namespace WpfApp1
 {
-    
-
+    using PointShapeFiles;
     static class Draw
     {
         public static Shape curShape = null;
@@ -30,6 +29,7 @@ namespace WpfApp1
         private static bool onDrawing = false;
         public static System.Windows.UIElement? tempShape = null;
 
+        
         public static void onMouseDown(MouseButtonEventArgs e)
         {
             if (!onDrawing)
@@ -61,7 +61,7 @@ namespace WpfApp1
         {
             public Brush borderColor;
             public Brush fillColor;
-            public int lineWidth;
+            public double lineWidth;
         }
 
         private static void setShape(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
@@ -86,13 +86,7 @@ namespace WpfApp1
             System.Windows.UIElement? temp = tempShape;
             tempShape = null;
             return temp;
-
-
         }
-
-
-
-
 
 
         public static void onPolyMouseDown(MouseButtonEventArgs e)

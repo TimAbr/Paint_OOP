@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -14,6 +15,7 @@ namespace WpfApp1
         protected int y;
         protected int width;
         protected int height;
+
         public Shape(Canvas canvas, int x, int y, int width, int height)
         {
             this.width = width;
@@ -24,8 +26,8 @@ namespace WpfApp1
             brush = new SolidColorBrush(Colors.White);
             this.canvas = canvas;
             Pen = null;
-
         }
+
 
         public Shape(Canvas canvas, int x, int y, int width)
         {
@@ -165,6 +167,15 @@ namespace WpfApp1
                     pen = value;
                 }
             }
+        }
+
+        protected void init(System.Windows.Shapes.Shape s, Pen pen, Brush brush)
+        {
+            s.Fill = brush;
+            s.Stroke = pen.Brush;
+            s.StrokeDashArray = pen.DashStyle.Dashes;
+            s.StrokeThickness = pen.Thickness;
+            s.StrokeDashCap = pen.DashCap;
         }
 
         abstract public System.Windows.UIElement draw();
