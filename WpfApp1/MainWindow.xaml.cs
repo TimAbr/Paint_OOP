@@ -1,22 +1,11 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static WpfApp1.FrameShapeFiles.MyPolygon;
 using static WpfApp1.Draw;
-using static Microsoft.Maui.ApplicationModel.Permissions;
-using System.Collections.ObjectModel;
-using Xceed.Wpf.AvalonDock.Controls;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Globalization;
 
 namespace WpfApp1;
 using PointShapeFiles;
@@ -55,6 +44,14 @@ public partial class MainWindow : Window
         DropdownPopup.IsOpen = widthPopUpVisible;
     }
 
+    public static int compareTypes(Type a, Type b)
+    {
+        int i1 = (int)a.GetField("id", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+        int i2 = (int)b.GetField("id", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+
+        return i1.CompareTo(i2);
+    }
+
 
     public MainWindow()
     {
@@ -67,6 +64,15 @@ public partial class MainWindow : Window
 
         Type ourtype = typeof(Shape); // Базовый тип
         shapeTypeList = Assembly.GetAssembly(ourtype).GetTypes().Where(type => type.IsSubclassOf(ourtype) && !type.IsAbstract).ToArray<Type>();
+        shapeTypeList = shapeTypeList.OrderBy(type =>
+        {
+            FieldInfo idField = type.GetField("id", BindingFlags.Public | BindingFlags.Static);
+            if (idField == null)
+                throw new InvalidOperationException($"Class {type.Name} does not have a static 'id' field.");
+
+            return (int)idField.GetValue(null); // Get static field value
+        }).ToArray();
+
         shapeButtons = new ToggleButton[shapeTypeList.Length];
 
         FillUIElements.setShapeButtons(shapeButtonList,shapeTypeList,shapeButtons, new RoutedEventHandler(ShapeButtonClick));
@@ -99,28 +105,23 @@ public partial class MainWindow : Window
             ShapeSettings s = new ShapeSettings();
             int x = (int)e.GetPosition(mainCanvas).X;
             int y = (int)e.GetPosition(mainCanvas).Y;
+            s.mouseUp = new MouseButtonEventHandler(CanvasMouseUp);
             s.borderColor = borderEllipse.Fill;
             s.fillColor = fillEllipse.Fill;
             s.lineWidth = allStrokeWidths[curWidth];
 
             if (shapeTypeList[curShape].IsSubclassOf(typeof(PointShape)))
             {
+                s.isLast = false;
                 ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 3).First();
-                System.Windows.UIElement? tempShape = Draw.onPolyMouseUp(x, y, constructor, s);
-
-                if (tempShape != null)
-                {
-                    tempShape.MouseUp -= new MouseButtonEventHandler(CanvasMouseUp);
-                }
+                    Draw.onPolyMouseUp(x, y, constructor, s);
             }
             else
             {
+                s.isLast = false;
+
                 ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 5).First();
-                System.Windows.UIElement? tempShape = Draw.onMouseUp(x, y, constructor, s);
-                if (tempShape != null)
-                {
-                    tempShape.MouseUp -= new MouseButtonEventHandler(CanvasMouseUp);
-                }
+                    Draw.onMouseUp(x, y, constructor, s);
             }
             
         }
@@ -132,28 +133,32 @@ public partial class MainWindow : Window
             ShapeSettings s = new ShapeSettings();
             int x = (int)e.GetPosition(mainCanvas).X;
             int y = (int)e.GetPosition(mainCanvas).Y;
+            s.mouseUp = new MouseButtonEventHandler(CanvasMouseUp);
             s.borderColor = borderEllipse.Fill;
             s.fillColor = fillEllipse.Fill;
             s.lineWidth = allStrokeWidths[curWidth];
 
             if (shapeTypeList[curShape].IsSubclassOf(typeof(PointShape))) 
             {
-
+                s.isLast = false;
                 ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 3).First();
-                System.Windows.UIElement? tempShape = Draw.onPolyMouseMove(x, y, constructor, s);
-                if (tempShape != null)
-                {
-                    tempShape.MouseUp += new MouseButtonEventHandler(CanvasMouseUp);
-                }
+                //System.Windows.UIElement? tempShape = 
+                    Draw.onPolyMouseMove(x, y, constructor, s);
+                //if (tempShape != null)
+                //{
+                    //tempShape.MouseUp += new MouseButtonEventHandler(CanvasMouseUp);
+                //}
             }
             else
             {
+                s.isLast = false;
                 ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 5).First();
-                System.Windows.UIElement? tempShape = Draw.onMouseMove(x, y, constructor, s);
-                if (tempShape != null)
-                {
-                    tempShape.MouseUp += new MouseButtonEventHandler(CanvasMouseUp);
-                }
+                //System.Windows.UIElement? tempShape = 
+                    Draw.onMouseMove(x, y, constructor, s);
+                //if (tempShape != null)
+                //{
+                    //tempShape.MouseUp += new MouseButtonEventHandler(CanvasMouseUp);
+                //}
             }
         }
     }
@@ -194,6 +199,7 @@ public partial class MainWindow : Window
     private void LoadedCanvas(object sender, RoutedEventArgs e)
     {
         Draw.mainCanvas = (Canvas)sender;
+        Draw.shapeList = new Shortcuts.ShapeList.ShapeList(0, Draw.mainCanvas);
 
     }
 

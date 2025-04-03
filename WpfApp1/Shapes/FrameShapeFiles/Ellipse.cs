@@ -10,6 +10,9 @@ namespace WpfApp1.FrameShapeFiles
     public class MyEllipse : FrameShape
     {
 
+        public static int id = 2;
+        
+
         public MyEllipse(Canvas canvas, int x1, int y1, int x2, int y2)
             : base(canvas, x1, y1, x2, y2)
         {
@@ -45,13 +48,23 @@ namespace WpfApp1.FrameShapeFiles
             Ellipse tr = new Ellipse();
             tr.Width = width;
             tr.Height = height;
-            init(tr, pen, brush);    
+            init(tr);    
             canvas.Children.Add(tr);
             Canvas.SetLeft(tr, x);
             Canvas.SetTop(tr, y);
 
-            return tr;
-            
+            return tr;      
+        }
+
+        public override Shape copy()
+        {
+            MyEllipse clone = new MyEllipse(canvas, x, y, width, height);
+
+
+            clone.pen = pen.Clone();
+            clone.brush = brush.Clone();
+
+            return clone;
         }
     }
 }

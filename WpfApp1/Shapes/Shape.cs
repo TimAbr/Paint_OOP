@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static WpfApp1.Draw;
 
 namespace WpfApp1
 {
@@ -15,6 +16,10 @@ namespace WpfApp1
         protected int y;
         protected int width;
         protected int height;
+
+        public ShapeSettings settings;
+
+        public bool isPointShape;
 
         public Shape(Canvas canvas, int x, int y, int width, int height)
         {
@@ -169,16 +174,27 @@ namespace WpfApp1
             }
         }
 
-        protected void init(System.Windows.Shapes.Shape s, Pen pen, Brush brush)
+        protected void init(System.Windows.Shapes.Shape s)
         {
+            brush = settings.fillColor;
+            Pen.Brush = settings.borderColor;
+            pen.Thickness = settings.lineWidth;
+
             s.Fill = brush;
             s.Stroke = pen.Brush;
             s.StrokeDashArray = pen.DashStyle.Dashes;
             s.StrokeThickness = pen.Thickness;
             s.StrokeDashCap = pen.DashCap;
+
+            if (!settings.isLast)
+            {
+                s.MouseUp += settings.mouseUp;
+            }
         }
 
         abstract public System.Windows.UIElement draw();
+
+        abstract public Shape copy();
 
     }
 }

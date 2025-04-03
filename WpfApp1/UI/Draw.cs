@@ -11,12 +11,14 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using WpfApp1.PointShapeFiles;
+using WpfApp1.Shortcuts.ShapeList;
 
 
 namespace WpfApp1
 {
-    using PointShapeFiles;
-    static class Draw
+    
+    public static class Draw
     {
         public static Shape curShape = null;
 
@@ -27,7 +29,14 @@ namespace WpfApp1
         private static int xFinish;
         private static int yFinish;
         private static bool onDrawing = false;
-        public static System.Windows.UIElement? tempShape = null;
+
+        public static ShapeList shapeList = null;
+
+
+        public static void reDraw()
+        {
+
+        }
 
         
         public static void onMouseDown(MouseButtonEventArgs e)
@@ -40,21 +49,18 @@ namespace WpfApp1
             }
         }
 
-        public static System.Windows.UIElement? onMouseMove(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
+        public static void onMouseMove(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
         {
             if (onDrawing) {
-
-                if (tempShape != null)
+                                
+                if (curShape != null)
                 {
-                    if (mainCanvas.Children.Contains(tempShape))
-                    {
-                        mainCanvas.Children.Remove(tempShape);
-                    }
+                    shapeList.removeLast();
                 }
 
                 setShape(xFinish, yFinish, constructor, s);
             }
-            return tempShape;
+
         }
 
         public struct ShapeSettings
@@ -62,30 +68,36 @@ namespace WpfApp1
             public Brush borderColor;
             public Brush fillColor;
             public double lineWidth;
+            public bool isLast;
+            public MouseButtonEventHandler mouseUp;
         }
 
         private static void setShape(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
         {
             Shape temp = (Shape)constructor.Invoke(new object[] { mainCanvas, xStart, yStart, xFinish, yFinish });
-            
-            temp.Pen.Brush = s.borderColor;
-            temp.Pen.Thickness = s.lineWidth;
-            temp.Brush = s.fillColor;
-            tempShape = (temp).draw();
+
+
+            temp.settings = s;
+
+
+            shapeList.add(temp);
+            shapeList.reDraw();
+
+            curShape = temp;
+
         }
 
     
 
-        public static System.Windows.UIElement? onMouseUp(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
+        public static void onMouseUp(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
         {
             if (onDrawing)
             {
                 onMouseMove(xFinish, yFinish, constructor, s);
             }
             onDrawing = false;
-            System.Windows.UIElement? temp = tempShape;
-            tempShape = null;
-            return temp;
+            curShape = null;
+
         }
 
 
@@ -99,7 +111,7 @@ namespace WpfApp1
             }
         }
 
-        public static System.Windows.UIElement? onPolyMouseMove(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
+        public static void onPolyMouseMove(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
         {
             if (curShape != null)
             {
@@ -107,57 +119,42 @@ namespace WpfApp1
                 {
                     ((PointShape)curShape).RemoveLastPoint();
                 }
+
                 ((PointShape)curShape).AddPoint(xFinish, yFinish);
-                mainCanvas.Children.Remove(tempShape);
-                curShape.Pen.Brush = s.borderColor;
-                curShape.Pen.Thickness = s.lineWidth;
-                curShape.Brush = s.fillColor;
-                tempShape = ((PointShape)curShape).draw();
-                return tempShape;
+
+                shapeList.reDraw();
             }
-            return null;
 
         }
 
 
 
-        public static System.Windows.UIElement? onPolyMouseUp(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
+        public static void onPolyMouseUp(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
         {
             bool isEnd = false;
             if (curShape != null)
             {
                 isEnd = ((PointShape)Draw.curShape).AddPoint(xFinish, yFinish);
-                Draw.mainCanvas.Children.Remove(Draw.tempShape);
-
+                shapeList.reDraw();
             }
             else
             {
                 (Draw.curShape) = (PointShape)constructor.Invoke(new object[] { Draw.mainCanvas, xFinish, yFinish });
+                shapeList.add(curShape);
             }
-            curShape.Pen.Brush = s.borderColor;
-            curShape.Pen.Thickness = s.lineWidth;
-            curShape.Brush = s.fillColor;
-            Draw.tempShape = ((PointShape)Draw.curShape).draw();
+            curShape.settings = s;
+            shapeList.reDraw();
 
-            System.Windows.UIElement? temp = tempShape;
             if (isEnd)
             {
+                s.isLast = true;
                 ((PointShape)Draw.curShape).RemoveLastPoint();
-                Draw.mainCanvas.Children.Remove(Draw.tempShape);
-                curShape.Pen.Brush = s.borderColor;
-                curShape.Pen.Thickness = s.lineWidth;
-                curShape.Brush = s.fillColor;
-                Draw.tempShape = ((PointShape)Draw.curShape).draw();
-                temp = tempShape;
+                shapeList.reDraw();
+                
                 curShape = null;
-                tempShape = null;
 
             }
-            return temp;
-
         
-
-
         }
 
     }

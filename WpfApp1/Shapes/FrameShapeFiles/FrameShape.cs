@@ -11,7 +11,7 @@ namespace WpfApp1.FrameShapeFiles
     {
         public FrameShape(Canvas canvas, int x, int y, int width):base(canvas, x, y, width)
         {
-           
+            isPointShape = false;
         }
 
         public FrameShape(Canvas canvas, int x, int y, int width, int height):base(canvas,x,y,width,height)

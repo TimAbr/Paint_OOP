@@ -10,6 +10,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using static WpfApp1.Draw;
 
 namespace WpfApp1.UI
 {
@@ -164,9 +165,16 @@ namespace WpfApp1.UI
                 ConstructorInfo constructor = shapeTypeList[i].GetConstructors().Where(_ => _.GetParameters().Length == 4).First();
 
                 Shape temp = (Shape)constructor.Invoke(new object[] { cnv, 1, 1, 16 });
-                temp.Brush = mainColorBrush;
-                temp.Pen = new Pen();
-                temp.Pen.Brush = Brushes.LightGray;
+                
+                ShapeSettings s = new ShapeSettings();
+                s.mouseUp = null;
+                s.borderColor = Brushes.LightGray;
+                s.fillColor = mainColorBrush;
+                s.lineWidth = 1;
+                s.isLast = true;
+
+                temp.settings = s;
+
                 temp.draw();
 
                 el.Content = cnv;

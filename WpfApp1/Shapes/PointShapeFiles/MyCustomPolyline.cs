@@ -11,7 +11,8 @@ namespace WpfApp1.PointShapeFiles
 {
     class MyCustomPolyline : PointShape
     {
-
+        public static int id = 5;
+        
 
         public MyCustomPolyline(Canvas canvas, int x, int y, int width)
             : base(canvas, x, y, width)
@@ -45,12 +46,27 @@ namespace WpfApp1.PointShapeFiles
                 G = 0x27,
                 B = 0x27
             });
-            init(tr, pen, brush);
+            init(tr);
 
             canvas.Children.Add(tr);
 
             return tr;
 
+        }
+
+        public override Shape copy()
+        {
+            MyCustomPolyline clone = new MyCustomPolyline(canvas, x, y);
+
+            for (int i = 1; i<pointCollection.Count; i++)
+            {
+                clone.AddPoint((int)pointCollection[i].X, (int)pointCollection[i].Y);
+            }
+
+            clone.pen = pen.Clone();
+            clone.brush = brush.Clone();
+
+            return clone;
         }
     }
 }

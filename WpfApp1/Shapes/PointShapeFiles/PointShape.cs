@@ -12,11 +12,14 @@ namespace WpfApp1.PointShapeFiles
     
     public abstract class PointShape: Shape
     {
+        
         protected void setPoints(int x, int y, int width, int height, int num)
         {
 
             double centerX = x + width / 2.0;
             double centerY = y + height / 2.0;
+
+           
 
 
             List<System.Windows.Point> normalizedPoints = new List<System.Windows.Point>();
@@ -67,8 +70,10 @@ namespace WpfApp1.PointShapeFiles
 
 
         public PointCollection pointCollection = new PointCollection();
+
         protected int num;
         protected int count = 0;
+
         public PointShape(Canvas canvas, int x, int y, int width)
             : base(canvas, x, y, width)
         {
@@ -94,6 +99,10 @@ namespace WpfApp1.PointShapeFiles
             this.canvas = canvas;
             Pen = null;
 
+            isPointShape = true;
+
         }
+
+      
     }
 }

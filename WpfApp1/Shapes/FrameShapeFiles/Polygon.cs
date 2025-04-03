@@ -10,6 +10,9 @@ namespace WpfApp1.FrameShapeFiles
     public class MyPolygon : FrameShape
     {
 
+        public static int id = 3;
+        
+
         protected PointCollection pointCollection = new PointCollection();
         protected int num;
         public int Num { get => num; set{ num = value; setPoints(x, y, width, height, num); } }
@@ -76,6 +79,7 @@ namespace WpfApp1.FrameShapeFiles
             height = Math.Abs(y2 - y1);
 
             setPoints(x, y, width, height, num);
+
         }
 
         public MyPolygon(Canvas canvas, int x, int y, int width)
@@ -90,14 +94,24 @@ namespace WpfApp1.FrameShapeFiles
 
             Polygon tr = new Polygon();
             tr.Points = pointCollection;
-            init(tr, pen, brush);
+            init(tr);
 
             canvas.Children.Add(tr);
 
             return tr;
             
         }
-    
+        public override Shape copy()
+        {
+            MyPolygon clone = new MyPolygon(canvas, x, y, width, height);
+
+
+            clone.pen = pen.Clone();
+            clone.brush = brush.Clone();
+
+            return clone;
+        }
+
     }
 
 }
