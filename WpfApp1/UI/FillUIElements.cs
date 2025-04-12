@@ -173,7 +173,7 @@ namespace WpfApp1.UI
                 s.lineWidth = 1;
                 s.isLast = true;
 
-                temp.settings = s;
+                temp.Settings = s;
 
                 temp.draw();
 

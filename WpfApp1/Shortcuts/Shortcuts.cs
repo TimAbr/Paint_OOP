@@ -19,11 +19,11 @@ namespace WpfApp1.Shortcuts
         }
         public static void Undo()
         {
-
+            Draw.shapeList.undo();
         }
         public static void Redo()
         {
-
+            Draw.shapeList.redo();
         }
         public static void NewFile()
         {

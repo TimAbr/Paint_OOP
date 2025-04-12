@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace WpfApp1.Shortcuts.ShapeList
 {
@@ -14,13 +9,17 @@ namespace WpfApp1.Shortcuts.ShapeList
         private List<Shape> shapeList = new List<Shape>();
         private Canvas canvas;
 
+        private Undo.Undo undoStack;
+        private Redo.Redo redoStack;
+
         public Shape? this[int index]
         {
             get {
                 if (shapeList.Count <= index)
                 {
                     return null;
-                } else
+                } 
+                else
                 {
                     return shapeList[index];
                 }
@@ -38,6 +37,9 @@ namespace WpfApp1.Shortcuts.ShapeList
         {
             shapeList = new List<Shape>(n);
             this.canvas = canvas;
+
+            undoStack = new Undo.Undo();
+            redoStack = new Redo.Redo();
         }
 
 
@@ -55,7 +57,7 @@ namespace WpfApp1.Shortcuts.ShapeList
             ShapeList sl = new ShapeList(shapeList.Count, canvas);
             for (int i = 0; i<shapeList.Count; i++)
             {
-                sl[i] = shapeList[i].copy();
+                sl.add(shapeList[i].copy());
             }
             return sl;
         }
@@ -63,6 +65,11 @@ namespace WpfApp1.Shortcuts.ShapeList
         public int size()
         {
             return shapeList.Count();
+        }
+
+        public List<Shape> getList()
+        {
+            return shapeList;
         }
 
 
@@ -79,6 +86,33 @@ namespace WpfApp1.Shortcuts.ShapeList
         public Shape last()
         {
             return shapeList.Last();
+        }
+
+        public void undo()
+        {
+            if (!undoStack.isEmpty())
+            {
+                redoStack.add(this.copy());
+                shapeList = undoStack.pop().getList();
+            }
+            reDraw();
+            
+        }
+
+        public void redo()
+        {
+            if (!redoStack.isEmpty())
+            {
+                undoStack.add(this.copy());
+                shapeList = redoStack.pop().getList();
+            }
+            reDraw();
+        }
+
+        public void addUndo()
+        {
+            undoStack.add(copy());
+            redoStack.clear();
         }
     }
 }

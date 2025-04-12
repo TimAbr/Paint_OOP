@@ -46,6 +46,8 @@ namespace WpfApp1.PointShapeFiles
                 G = 0x27,
                 B = 0x27
             });
+
+            settings.fillColor = brush;
             init(tr);
 
             canvas.Children.Add(tr);
@@ -63,8 +65,7 @@ namespace WpfApp1.PointShapeFiles
                 clone.AddPoint((int)pointCollection[i].X, (int)pointCollection[i].Y);
             }
 
-            clone.pen = pen.Clone();
-            clone.brush = brush.Clone();
+            clone.Settings = settings;
 
             return clone;
         }

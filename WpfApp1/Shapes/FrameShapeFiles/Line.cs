@@ -41,11 +41,10 @@ namespace WpfApp1.FrameShapeFiles
 
         public override Shape copy()
         {
-            MyLine clone = new MyLine(canvas, x, y, width, height);
+            MyLine clone = new MyLine(canvas, x, y, x + width, y + height);
 
 
-            clone.pen = pen.Clone();
-            clone.brush = brush.Clone();
+            clone.Settings = settings;
 
             return clone;
         }

@@ -103,11 +103,10 @@ namespace WpfApp1.FrameShapeFiles
         }
         public override Shape copy()
         {
-            MyPolygon clone = new MyPolygon(canvas, x, y, width, height);
+            MyPolygon clone = new MyPolygon(canvas, x, y, x + width, y + height);
 
 
-            clone.pen = pen.Clone();
-            clone.brush = brush.Clone();
+            clone.Settings = settings;
 
             return clone;
         }

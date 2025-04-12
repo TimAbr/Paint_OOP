@@ -17,7 +17,21 @@ namespace WpfApp1
         protected int width;
         protected int height;
 
-        public ShapeSettings settings;
+        protected ShapeSettings settings;
+
+        public ShapeSettings Settings
+        {
+            set
+            {
+                settings = new ShapeSettings();
+                settings.mouseUp = value.mouseUp;
+                settings.isLast = value.isLast;
+                settings.fillColor = value.fillColor.Clone();
+                settings.borderColor = value.borderColor.Clone();
+                settings.lineWidth = value.lineWidth;
+            }
+        }
+
 
         public bool isPointShape;
 
@@ -186,7 +200,7 @@ namespace WpfApp1
             s.StrokeThickness = pen.Thickness;
             s.StrokeDashCap = pen.DashCap;
 
-            if (!settings.isLast)
+            if (!settings.isLast && settings.mouseUp!=null)
             {
                 s.MouseUp += settings.mouseUp;
             }

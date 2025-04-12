@@ -3,54 +3,52 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 
-namespace WpfApp1.Shortcuts.Undo
+namespace WpfApp1.Shortcuts.Redo
 {
-    public class Undo
+    public class Redo
     {
 
-        private Stack<ShapeList.ShapeList> undoStack;
+        private Stack<ShapeList.ShapeList> redoStack;
 
-        public Undo()
+        public Redo()
         {
-            undoStack = new Stack<ShapeList.ShapeList>();
+            redoStack = new Stack<ShapeList.ShapeList>();
         }
 
         public int size()
         {
-            return undoStack.Count();
+            return redoStack.Count();
         }
 
 
         public void add(ShapeList.ShapeList s)
         {
-            undoStack.Push(s);
+            redoStack.Push(s);
         }
 
         public bool isEmpty()
         {
-            return undoStack.Count == 0;
+            return redoStack.Count == 0;
         }
 
         public ShapeList.ShapeList pop()
         {
-            return undoStack.Pop();
+            return redoStack.Pop();
         }
 
         public ShapeList.ShapeList top()
         {
-            return undoStack.Peek();
+            return redoStack.Peek();
         }
 
-        public ShapeList.ShapeList undo()
+        public ShapeList.ShapeList redo()
         {
-            return pop();
+            return top();
         }
-
         public void clear()
         {
-            undoStack.Clear();
+            redoStack.Clear();
         }
     }
 }

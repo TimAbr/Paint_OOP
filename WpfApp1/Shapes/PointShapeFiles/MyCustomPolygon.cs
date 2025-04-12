@@ -56,8 +56,7 @@ namespace WpfApp1.PointShapeFiles
                 clone.AddPoint((int)pointCollection[i].X, (int)pointCollection[i].Y);
             }
 
-            clone.pen = pen.Clone();
-            clone.brush = brush.Clone();
+            clone.Settings = settings;
 
             return clone;
         }

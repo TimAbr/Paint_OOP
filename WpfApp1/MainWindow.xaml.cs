@@ -87,6 +87,7 @@ public partial class MainWindow : Window
 
         if (curShape >= 0)
         {
+            shapeList.addUndo();
             if (shapeTypeList[curShape].IsSubclassOf(typeof(PointShape)))
             {
                 

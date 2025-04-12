@@ -77,7 +77,7 @@ namespace WpfApp1
             Shape temp = (Shape)constructor.Invoke(new object[] { mainCanvas, xStart, yStart, xFinish, yFinish });
 
 
-            temp.settings = s;
+            temp.Settings = s;
 
 
             shapeList.add(temp);
@@ -142,7 +142,7 @@ namespace WpfApp1
                 (Draw.curShape) = (PointShape)constructor.Invoke(new object[] { Draw.mainCanvas, xFinish, yFinish });
                 shapeList.add(curShape);
             }
-            curShape.settings = s;
+            curShape.Settings = s;
             shapeList.reDraw();
 
             if (isEnd)
