@@ -6,10 +6,9 @@ namespace WpfApp1.Shortcuts.ShapeList
     public class ShapeList
     {
 
-        private List<Shape> shapeList = new List<Shape>();
+        private List<Shape> shapeList;
         private Canvas canvas;
 
-        private Undo.Undo undoStack;
         private Redo.Redo redoStack;
 
         public Shape? this[int index]
@@ -37,50 +36,53 @@ namespace WpfApp1.Shortcuts.ShapeList
         {
             shapeList = new List<Shape>(n);
             this.canvas = canvas;
-
-            undoStack = new Undo.Undo();
             redoStack = new Redo.Redo();
         }
 
 
-        public void reDraw()
-        {
-            canvas.Children.Clear();
-            for (int i = 0; i<this.size(); i++)
-            {
-                shapeList[i].draw();
-            }
-        }
+        //public void reDraw()
+        //{
+        //    canvas.Children.Clear();
+        //    for (int i = 0; i < this.size(); i++)
+        //    {
+        //        shapeList[i].draw();
+        //    }
+        //}
 
-        private ShapeList copy()
-        {
-            ShapeList sl = new ShapeList(shapeList.Count, canvas);
-            for (int i = 0; i<shapeList.Count; i++)
-            {
-                sl.add(shapeList[i].copy());
-            }
-            return sl;
-        }
+        //private ShapeList copy()
+        //{
+        //    ShapeList sl = new ShapeList(shapeList.Count, canvas);
+        //    for (int i = 0; i<shapeList.Count; i++)
+        //    {
+        //        sl.add(shapeList[i].copy());
+        //    }
+        //    return sl;
+        //}
 
         public int size()
         {
             return shapeList.Count();
         }
 
-        public List<Shape> getList()
-        {
-            return shapeList;
-        }
+        //public List<Shape> getList()
+        //{
+        //    return shapeList;
+        //}
 
 
         public void add(Shape s)
         {
             shapeList.Add(s);
+            s.draw();
+            addUndo();
         }
 
-        public void removeLast()
+        public Shape removeLast()
         {
-            shapeList.RemoveAt(size() - 1);
+            var s = shapeList[size() - 1];
+            canvas.Children.RemoveAt(size() - 1);
+            shapeList.RemoveAt(size() - 1); 
+            return s;
         }
 
         public Shape last()
@@ -90,28 +92,38 @@ namespace WpfApp1.Shortcuts.ShapeList
 
         public void undo()
         {
-            if (!undoStack.isEmpty())
+
+            if (size()>0)
             {
-                redoStack.add(this.copy());
-                shapeList = undoStack.pop().getList();
+                Shape s = removeLast();
+                redoStack.add(s);
             }
-            reDraw();
+            //reDraw();
             
+        }
+
+        public void update()
+        {
+            if (size() > 0)
+            {
+                Shape s = removeLast();
+                add(s);
+            }
         }
 
         public void redo()
         {
             if (!redoStack.isEmpty())
             {
-                undoStack.add(this.copy());
-                shapeList = redoStack.pop().getList();
+                var s = redoStack.pop();
+                shapeList.Add(s);
+                s.draw();
             }
-            reDraw();
+            //reDraw();
         }
 
         public void addUndo()
         {
-            undoStack.add(copy());
             redoStack.clear();
         }
     }

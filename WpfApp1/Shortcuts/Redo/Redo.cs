@@ -9,11 +9,11 @@ namespace WpfApp1.Shortcuts.Redo
     public class Redo
     {
 
-        private Stack<ShapeList.ShapeList> redoStack;
+        private Stack<Shape> redoStack;
 
         public Redo()
         {
-            redoStack = new Stack<ShapeList.ShapeList>();
+            redoStack = new Stack<Shape>();
         }
 
         public int size()
@@ -22,7 +22,7 @@ namespace WpfApp1.Shortcuts.Redo
         }
 
 
-        public void add(ShapeList.ShapeList s)
+        public void add(Shape s)
         {
             redoStack.Push(s);
         }
@@ -32,17 +32,17 @@ namespace WpfApp1.Shortcuts.Redo
             return redoStack.Count == 0;
         }
 
-        public ShapeList.ShapeList pop()
+        public Shape pop()
         {
             return redoStack.Pop();
         }
 
-        public ShapeList.ShapeList top()
+        public Shape top()
         {
             return redoStack.Peek();
         }
 
-        public ShapeList.ShapeList redo()
+        public Shape redo()
         {
             return top();
         }

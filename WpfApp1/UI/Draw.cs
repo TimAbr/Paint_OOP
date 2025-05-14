@@ -81,7 +81,7 @@ namespace WpfApp1
 
 
             shapeList.add(temp);
-            shapeList.reDraw();
+            //shapeList.reDraw();
 
             curShape = temp;
 
@@ -122,7 +122,7 @@ namespace WpfApp1
 
                 ((PointShape)curShape).AddPoint(xFinish, yFinish);
 
-                shapeList.reDraw();
+               shapeList.update();
             }
 
         }
@@ -135,7 +135,7 @@ namespace WpfApp1
             if (curShape != null)
             {
                 isEnd = ((PointShape)Draw.curShape).AddPoint(xFinish, yFinish);
-                shapeList.reDraw();
+                shapeList.update();
             }
             else
             {
@@ -143,13 +143,13 @@ namespace WpfApp1
                 shapeList.add(curShape);
             }
             curShape.Settings = s;
-            shapeList.reDraw();
+            shapeList.update();
 
             if (isEnd)
             {
                 s.isLast = true;
                 ((PointShape)Draw.curShape).RemoveLastPoint();
-                shapeList.reDraw();
+                shapeList.update();
                 
                 curShape = null;
 

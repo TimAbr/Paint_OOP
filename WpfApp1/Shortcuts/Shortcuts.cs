@@ -9,6 +9,7 @@ namespace WpfApp1.Shortcuts
 {
     class Shortcuts
     {
+
         public static void Open()
         {
 
