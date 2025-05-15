@@ -10,6 +10,8 @@ using System.Reflection;
 namespace WpfApp1;
 using PointShapeFiles;
 using UI;
+using WpfApp1.Shapes;
+using WpfApp1.Shortcuts;
 
 public partial class MainWindow : Window
 {
@@ -17,14 +19,15 @@ public partial class MainWindow : Window
     private ToggleButton[] shapeButtons;
     private ToggleButton[] widthButtons;
 
+    private Shortcuts.Shortcuts shortcuts;
+
     private int curShape = -1;
     private int curWidth = 0;
 
     private double[] allStrokeWidths = { 1, 1.5, 2, 3, 5};
     
     private Color[] allColors = { Colors.Red, Colors.LightGray, Colors.Green, Colors.LightGray, Colors.LightGreen, Colors.DarkGray, Colors.LightBlue, Colors.LavenderBlush, Colors.LightCoral, Colors.White, Colors.Black };
-    
-    private Type[] shapeTypeList;
+   
 
     private Brush mainColorBrush = new SolidColorBrush(new Color
     {
@@ -46,8 +49,8 @@ public partial class MainWindow : Window
 
     public static int compareTypes(Type a, Type b)
     {
-        int i1 = (int)a.GetField("id", BindingFlags.Static | BindingFlags.Public).GetValue(null);
-        int i2 = (int)b.GetField("id", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+        int i1 = (int)a.GetProperty("id", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+        int i2 = (int)b.GetProperty("id", BindingFlags.Static | BindingFlags.Public).GetValue(null);
 
         return i1.CompareTo(i2);
     }
@@ -62,24 +65,17 @@ public partial class MainWindow : Window
         widthButtons = new ToggleButton[allStrokeWidths.Length];
         FillUIElements.setDropdownPopup(DropdownPopup,allStrokeWidths, widthButtons, new RoutedEventHandler(widthButtonClick), curWidth);
 
-        Type ourtype = typeof(Shape); // Базовый тип
-        shapeTypeList = Assembly.GetAssembly(ourtype).GetTypes().Where(type => type.IsSubclassOf(ourtype) && !type.IsAbstract).ToArray<Type>();
-        shapeTypeList = shapeTypeList.OrderBy(type =>
-        {
-            FieldInfo idField = type.GetField("id", BindingFlags.Public | BindingFlags.Static);
-            if (idField == null)
-                throw new InvalidOperationException($"Class {type.Name} does not have a static 'id' field.");
+        
 
-            return (int)idField.GetValue(null); // Get static field value
-        }).ToArray();
+        shapeButtons = new ToggleButton[ShapeFactory.Instance().getTypeList().Length];
 
-        shapeButtons = new ToggleButton[shapeTypeList.Length];
-
-        FillUIElements.setShapeButtons(shapeButtonList,shapeTypeList,shapeButtons, new RoutedEventHandler(ShapeButtonClick));
+        FillUIElements.setShapeButtons(shapeButtonList, ShapeFactory.Instance().getTypeList(), shapeButtons, new RoutedEventHandler(ShapeButtonClick));
         chosenEllipse = borderEllipse;
         chosenEllipse.Stroke = Brushes.LightSteelBlue;
         chosenEllipse.StrokeThickness = 2;
         fillEllipse.StrokeThickness = 0;
+
+        shortcuts = new Shortcuts.Shortcuts();
     }
 
     private void CanvasMouseDown(object sender, MouseButtonEventArgs e)
@@ -88,7 +84,7 @@ public partial class MainWindow : Window
         if (curShape >= 0)
         {
             shapeList.addUndo();
-            if (shapeTypeList[curShape].IsSubclassOf(typeof(PointShape)))
+            if (ShapeFactory.Instance().getTypeList()[curShape].IsSubclassOf(typeof(PointShape)))
             {
                 
             }
@@ -107,22 +103,22 @@ public partial class MainWindow : Window
             int x = (int)e.GetPosition(mainCanvas).X;
             int y = (int)e.GetPosition(mainCanvas).Y;
             s.mouseUp = new MouseButtonEventHandler(CanvasMouseUp);
-            s.borderColor = borderEllipse.Fill;
-            s.fillColor = fillEllipse.Fill;
+            s.borderColor = ((borderEllipse.Fill) as SolidColorBrush).Color;
+            s.fillColor = ((fillEllipse.Fill) as SolidColorBrush).Color;
             s.lineWidth = allStrokeWidths[curWidth];
 
-            if (shapeTypeList[curShape].IsSubclassOf(typeof(PointShape)))
+            if (ShapeFactory.Instance().getTypeList()[curShape].IsSubclassOf(typeof(PointShape)))
             {
                 s.isLast = false;
-                ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 3).First();
-                    Draw.onPolyMouseUp(x, y, constructor, s);
+                
+                Draw.onPolyMouseUp(x, y, curShape, s);
             }
             else
             {
                 s.isLast = false;
 
-                ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 5).First();
-                    Draw.onMouseUp(x, y, constructor, s);
+                
+                Draw.onMouseUp(x, y, curShape, s);
             }
             
         }
@@ -135,31 +131,22 @@ public partial class MainWindow : Window
             int x = (int)e.GetPosition(mainCanvas).X;
             int y = (int)e.GetPosition(mainCanvas).Y;
             s.mouseUp = new MouseButtonEventHandler(CanvasMouseUp);
-            s.borderColor = borderEllipse.Fill;
-            s.fillColor = fillEllipse.Fill;
+            s.borderColor = ((borderEllipse.Fill) as SolidColorBrush).Color;
+            s.fillColor = ((fillEllipse.Fill) as SolidColorBrush).Color;
             s.lineWidth = allStrokeWidths[curWidth];
 
-            if (shapeTypeList[curShape].IsSubclassOf(typeof(PointShape))) 
+            if (ShapeFactory.Instance().getTypeList()[curShape].IsSubclassOf(typeof(PointShape))) 
             {
                 s.isLast = false;
-                ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 3).First();
-                //System.Windows.UIElement? tempShape = 
-                    Draw.onPolyMouseMove(x, y, constructor, s);
-                //if (tempShape != null)
-                //{
-                    //tempShape.MouseUp += new MouseButtonEventHandler(CanvasMouseUp);
-                //}
+                         
+                Draw.onPolyMouseMove(x, y, curShape, s);
+
             }
             else
             {
                 s.isLast = false;
-                ConstructorInfo constructor = shapeTypeList[curShape].GetConstructors().Where(_ => _.GetParameters().Length == 5).First();
-                //System.Windows.UIElement? tempShape = 
-                    Draw.onMouseMove(x, y, constructor, s);
-                //if (tempShape != null)
-                //{
-                    //tempShape.MouseUp += new MouseButtonEventHandler(CanvasMouseUp);
-                //}
+
+                Draw.onMouseMove(x, y, curShape, s);
             }
         }
     }
@@ -168,7 +155,8 @@ public partial class MainWindow : Window
 
     private void ShapeButtonClick(object sender, RoutedEventArgs e)
     {
-        for (int i = 0; i<shapeTypeList.Length; i++)
+        var size = ShapeFactory.Instance().getTypeList().Length;
+        for (int i = 0; i<size; i++)
         {
             if (shapeButtons[i]==(ToggleButton)sender)
             {
@@ -227,23 +215,23 @@ public partial class MainWindow : Window
 
     private void OpenCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
     {
-        Shortcuts.Shortcuts.Open();
+        shortcuts.Open();
     }
     private void SaveCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
     {
-        Shortcuts.Shortcuts.Save();
+        shortcuts.Save();
     }
     private void UndoCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
     {
-        Shortcuts.Shortcuts.Undo();
+        shortcuts.Undo();
     }
     private void RedoCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
     {
-        Shortcuts.Shortcuts.Redo();
+        shortcuts.Redo();
     }
     private void NewFileCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
     {
-        Shortcuts.Shortcuts.NewFile();
+        shortcuts.NewFile();
     }
 
 

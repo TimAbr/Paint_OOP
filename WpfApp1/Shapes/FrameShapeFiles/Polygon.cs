@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Drawing;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -10,8 +10,8 @@ namespace WpfApp1.FrameShapeFiles
     public class MyPolygon : FrameShape
     {
 
-        public static int id = 3;
-        
+        public static int id { get => 3; }
+
 
         protected PointCollection pointCollection = new PointCollection();
         protected int num;
@@ -55,8 +55,8 @@ namespace WpfApp1.FrameShapeFiles
         }
 
 
-        public MyPolygon(Canvas canvas, int x1, int y1, int x2, int y2) 
-            : base(canvas, x1, y1, x2, y2)
+        public MyPolygon(int x1, int y1, int x2, int y2) 
+            : base(x1, y1, x2, y2)
         {
             num = 5;
             if (x1 > x2)
@@ -82,14 +82,14 @@ namespace WpfApp1.FrameShapeFiles
 
         }
 
-        public MyPolygon(Canvas canvas, int x, int y, int width)
-            : base(canvas, x, y, width)
+        public MyPolygon(int x, int y, int width)
+            : base(x, y, width)
         {
             num = 5;
             setPoints(x, y, width, height, 5);
         }
 
-        override public UIElement draw()
+        override public UIElement draw(Canvas canvas)
         {
 
             Polygon tr = new Polygon();
@@ -101,14 +101,12 @@ namespace WpfApp1.FrameShapeFiles
             return tr;
             
         }
-        public override Shape copy()
+
+        [JsonConstructor]
+        public MyPolygon(Color borderColor, Color fillColor, double borderLineWidth, int x, int y, int width, int height)
+           : base(borderColor, fillColor, borderLineWidth, x, y, width, height)
         {
-            MyPolygon clone = new MyPolygon(canvas, x, y, x + width, y + height);
 
-
-            clone.Settings = settings;
-
-            return clone;
         }
 
     }

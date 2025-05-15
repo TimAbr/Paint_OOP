@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,11 +10,9 @@ namespace WpfApp1.FrameShapeFiles
     public class MyRect : FrameShape
     {
 
-        public static int id = 0;
-       
-
-        public MyRect(Canvas canvas, int x1, int y1, int x2, int y2)
-            : base(canvas, x1, y1, x2, y2)
+        public static int id { get => 0; }
+        public MyRect(int x1, int y1, int x2, int y2)
+            : base(x1, y1, x2, y2)
         {
             if (x1 > x2)
             {
@@ -34,13 +33,13 @@ namespace WpfApp1.FrameShapeFiles
             width = Math.Abs(x2 - x1);
             height = Math.Abs(y2 - y1);
         }
-        public MyRect(Canvas canvas, int x, int y, int width)
-            : base(canvas, x, y, width)
+        public MyRect(int x, int y, int width)
+            : base(x, y, width)
         {
 
         }
 
-        override public UIElement draw()
+        override public UIElement draw(Canvas canvas)
         {
             Rectangle tr = new Rectangle();
             tr.Width = width;
@@ -53,17 +52,14 @@ namespace WpfApp1.FrameShapeFiles
             Canvas.SetTop(tr, y);
 
             return tr;
-
         }
 
-        public override Shape copy()
+        [JsonConstructor]
+        public MyRect(Color borderColor, Color fillColor, double borderLineWidth, int x, int y, int width, int height)
+           : base(borderColor, fillColor, borderLineWidth, x, y, width, height)
         {
-            MyRect clone = new MyRect(canvas, x, y, x + width, y + height);
 
-            clone.Settings = settings;
-
-
-            return clone;
         }
+
     }
 }

@@ -10,19 +10,22 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using WpfApp1.Shapes;
 using static WpfApp1.Draw;
 
 namespace WpfApp1.UI
 {
     class FillUIElements
     {
-        private static Brush mainColorBrush = new SolidColorBrush(new Color
+        private static Color mainColor = new Color
         {
             A = 255,
             R = 0x27,
             G = 0x27,
             B = 0x27
-        });
+        };
+
+        private static Brush mainColorBrush = new SolidColorBrush(mainColor);
 
         public static void setDropdownPopup(Popup DropdownPopup,double[] allStrokeWidths,ToggleButton[] widthButtons,RoutedEventHandler click,int curWidth)
         {
@@ -162,20 +165,19 @@ namespace WpfApp1.UI
                 el.Padding = new Thickness(0);
                 el.Margin = new Thickness(horMargin, vertMargin, 0, 0);
 
-                ConstructorInfo constructor = shapeTypeList[i].GetConstructors().Where(_ => _.GetParameters().Length == 4).First();
-
-                Shape temp = (Shape)constructor.Invoke(new object[] { cnv, 1, 1, 16 });
+              
+                Shape temp = ShapeFactory.Instance().get(i, new object[] { 1, 1, 16 });
                 
                 ShapeSettings s = new ShapeSettings();
                 s.mouseUp = null;
-                s.borderColor = Brushes.LightGray;
-                s.fillColor = mainColorBrush;
+                s.borderColor = Colors.LightGray;
+                s.fillColor = mainColor;
                 s.lineWidth = 1;
                 s.isLast = true;
 
                 temp.Settings = s;
 
-                temp.draw();
+                temp.draw(cnv);
 
                 el.Content = cnv;
                 shapeButtons[i] = el;

@@ -64,16 +64,16 @@ namespace WpfApp1.Shortcuts.ShapeList
             return shapeList.Count();
         }
 
-        //public List<Shape> getList()
-        //{
-        //    return shapeList;
-        //}
+        public List<Shape> getList()
+        {
+            return shapeList;
+        }
 
 
         public void add(Shape s)
         {
             shapeList.Add(s);
-            s.draw();
+            s.draw(canvas);
             addUndo();
         }
 
@@ -117,7 +117,7 @@ namespace WpfApp1.Shortcuts.ShapeList
             {
                 var s = redoStack.pop();
                 shapeList.Add(s);
-                s.draw();
+                s.draw(canvas);
             }
             //reDraw();
         }

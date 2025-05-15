@@ -7,26 +7,33 @@ using System.Windows.Input;
 
 namespace WpfApp1.Shortcuts
 {
-    class Shortcuts
+    public class Shortcuts
     {
 
-        public static void Open()
-        {
+        private Files.Files filesController;
 
-        }
-        public static void Save()
+        public Shortcuts()
         {
-
+            filesController = new Files.Files();
         }
-        public static void Undo()
+
+        public void Open()
+        {
+            filesController.open();
+        }
+        public void Save()
+        {
+            filesController.save(Draw.shapeList);
+        }
+        public void Undo()
         {
             Draw.shapeList.undo();
         }
-        public static void Redo()
+        public void Redo()
         {
             Draw.shapeList.redo();
         }
-        public static void NewFile()
+        public void NewFile()
         {
 
         }

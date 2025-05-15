@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Drawing;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -10,20 +10,20 @@ namespace WpfApp1.FrameShapeFiles
 {
     public class MyLine : FrameShape
     {
-        public static int id = 1;
-        
-        public MyLine(Canvas canvas, int x1, int y1, int x2, int y2)
-            : base(canvas, x1, y1, x2, y2)
+        public static int id { get => 1; }
+
+        public MyLine(int x1, int y1, int x2, int y2)
+            : base(x1, y1, x2, y2)
         {
             
         }
-        public MyLine(Canvas canvas, int x, int y, int width)
-            : base(canvas, x, y, width)
+        public MyLine(int x, int y, int width)
+            : base(x, y, width)
         {
 
         }
 
-        override public UIElement draw()
+        override public UIElement draw(Canvas canvas)
         {
 
             Line tr = new Line();
@@ -39,14 +39,11 @@ namespace WpfApp1.FrameShapeFiles
             
         }
 
-        public override Shape copy()
+        [JsonConstructor]
+        public MyLine(Color borderColor, Color fillColor, double borderLineWidth, int x, int y, int width, int height)
+           : base(borderColor, fillColor, borderLineWidth, x, y, width, height)
         {
-            MyLine clone = new MyLine(canvas, x, y, x + width, y + height);
 
-
-            clone.Settings = settings;
-
-            return clone;
         }
     }
 }

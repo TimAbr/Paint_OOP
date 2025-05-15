@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,6 +11,7 @@ using static WpfApp1.Draw;
 
 namespace WpfApp1
 {
+
     public abstract class Shape
     {
         protected int x;
@@ -17,48 +19,61 @@ namespace WpfApp1
         protected int width;
         protected int height;
 
-        protected ShapeSettings settings;
+        public Color borderColor { get; set; }
+        public Color fillColor { get; set; }
+
+        protected Brush borderBrush;
+        protected Brush fillBrush;
+
+        public double borderLineWidth {get;set;}
+
 
         public ShapeSettings Settings
         {
             set
             {
-                settings = new ShapeSettings();
-                settings.mouseUp = value.mouseUp;
-                settings.isLast = value.isLast;
-                settings.fillColor = value.fillColor.Clone();
-                settings.borderColor = value.borderColor.Clone();
-                settings.lineWidth = value.lineWidth;
+                fillColor = value.fillColor;
+                fillBrush = new SolidColorBrush(fillColor);
+
+                borderColor = value.borderColor;
+                borderBrush = new SolidColorBrush(borderColor);
+
+                borderLineWidth = value.lineWidth;
             }
         }
 
 
         public bool isPointShape;
 
-        public Shape(Canvas canvas, int x, int y, int width, int height)
+        public Shape(int x, int y, int width, int height)
         {
             this.width = width;
             this.height = height;
             this.x = x;
             this.y = y;
 
-            brush = new SolidColorBrush(Colors.White);
-            this.canvas = canvas;
-            Pen = null;
+            borderColor = Colors.Black;
+            fillColor = Colors.White;
+            borderBrush = new SolidColorBrush(borderColor);
+            fillBrush = new SolidColorBrush(fillColor);
+
+            borderLineWidth = 1;
         }
 
 
-        public Shape(Canvas canvas, int x, int y, int width)
+        public Shape(int x, int y, int width)
         {
             this.width = width;
             this.height = width;
             this.x = x;
             this.y = y;
 
-            brush = new SolidColorBrush(Colors.White);
-            this.canvas = canvas;
-            Pen = null;
+            borderColor = Colors.Black;
+            fillColor = Colors.White;
+            borderBrush = new SolidColorBrush(borderColor);
+            fillBrush = new SolidColorBrush(fillColor);
 
+            borderLineWidth = 1;
         }
 
         public int X { 
@@ -134,81 +149,25 @@ namespace WpfApp1
                 }
             }
         }
-        protected Brush brush;
-        protected Canvas canvas;
-        protected Pen pen;
 
-        public Brush Brush
-        {
-            get
-            {
-                return brush;
-            }
-            set
-            {
-                if (value == null)
-                {
-                    brush = new SolidColorBrush(Colors.White);
-                }
-                else
-                {
-                    brush = value;
-                }
-            }
-        }
+        
 
-        public Canvas Canvas
-        {
-            get { return canvas; }
-            set
-            {
-                if (value != null)
-                {
-                    canvas = value;
-                }
-            }
-        }
-
-        public Pen Pen
-        {
-            get
-            {
-                return pen;
-            }
-            set
-            {
-                if (value == null)
-                {
-                    pen = new Pen(Brushes.Black, 1.0);
-                }
-                else
-                {
-                    pen = value;
-                }
-            }
-        }
 
         protected void init(System.Windows.Shapes.Shape s)
         {
-            brush = settings.fillColor;
-            Pen.Brush = settings.borderColor;
-            pen.Thickness = settings.lineWidth;
+            s.Fill = fillBrush;
+            s.Stroke = borderBrush;
+            s.StrokeThickness = borderLineWidth;
 
-            s.Fill = brush;
-            s.Stroke = pen.Brush;
-            s.StrokeDashArray = pen.DashStyle.Dashes;
-            s.StrokeThickness = pen.Thickness;
-            s.StrokeDashCap = pen.DashCap;
+            s.IsHitTestVisible = false;
 
-            if (!settings.isLast && settings.mouseUp!=null)
-            {
-                s.MouseUp += settings.mouseUp;
-            }
+            //if (!settings.isLast && settings.mouseUp!=null)
+            //{
+            //    s.MouseUp += settings.mouseUp;
+            //}
         }
 
-        abstract public System.Windows.UIElement draw();
-
-        abstract public Shape copy();
+        abstract public System.Windows.UIElement draw(Canvas canvas);
 
     }
 }

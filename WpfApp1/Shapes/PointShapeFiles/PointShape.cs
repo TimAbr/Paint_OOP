@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Windows.ApplicationModel.Chat;
 
 namespace WpfApp1.PointShapeFiles
 {
@@ -48,7 +49,7 @@ namespace WpfApp1.PointShapeFiles
             {
                 double xScaled = (point.X - minX) * scaleX + x;
                 double yScaled = (point.Y - minY) * scaleY + y;
-                pointCollection.Add(new System.Windows.Point(xScaled, yScaled));
+                PointCollection.Add(new System.Windows.Point(xScaled, yScaled));
             }
             ;
 
@@ -56,31 +57,45 @@ namespace WpfApp1.PointShapeFiles
 
         public bool AddPoint(int x, int y)
         {
-            bool flag = num > 2 && x >= pointCollection[num - 2].X-2 && x <= pointCollection[num - 2].X+2 && y >= pointCollection[num - 2].Y-2 && y <= pointCollection[num - 2].Y+2;
-            pointCollection.Add(new System.Windows.Point(x, y));
+            bool flag = num > 2 && x >= PointCollection[num - 2].X-2 && x <= PointCollection[num - 2].X+2 && y >= PointCollection[num - 2].Y-2 && y <= PointCollection[num - 2].Y+2;
+            PointCollection.Add(new System.Windows.Point(x, y));
             num++;
             return flag;
         }
 
         public void RemoveLastPoint()
         {
-            ((PointShape)Draw.curShape).pointCollection.RemoveAt(num - 1);
+            ((PointShape)Draw.curShape).PointCollection.RemoveAt(num - 1);
             num--;
         }
 
 
-        public PointCollection pointCollection = new PointCollection();
+        public PointCollection PointCollection
+        {
+            set {
+                pointCollection = value;
+            }
+            get
+            {
+                return pointCollection;
+            }
+        }
+
+        public PointCollection pointCollection;
+
+
 
         protected int num;
-        protected int count = 0;
 
-        public PointShape(Canvas canvas, int x, int y, int width)
-            : base(canvas, x, y, width)
+        public PointShape(int x, int y, int width)
+            : base(x, y, width)
         {
             this.width = width;
             height = width;
             this.x = x;
             this.y = y;
+            pointCollection = new PointCollection();
+
             if (width > 0)
             {
                 num = 5;
@@ -89,19 +104,27 @@ namespace WpfApp1.PointShapeFiles
                 Random rnd = new Random();
                 for (int i = 0; i < num; i++)
                 {
-                    int x1 = pointCollection[i].X - 2 <= x ? x + rnd.Next(1, width / num) : pointCollection[i].X + 2 >= x + width - 1 ? x + width - rnd.Next(1, width / num) : (int)pointCollection[i].X + rnd.Next(-width / num, width / num + 1);
-                    int y1 = pointCollection[i].Y - 2 <= y ? y + rnd.Next(1, height / num) : pointCollection[i].Y + 2 >= y + height - 1 ? y + height - rnd.Next(1, height / num) : (int)pointCollection[i].Y + rnd.Next(-height / num, height / num + 1);
-                    pointCollection[i] = new System.Windows.Point(x1, y1);
+                    int x1 = PointCollection[i].X - 2 <= x ? x + rnd.Next(1, width / num) : PointCollection[i].X + 2 >= x + width - 1 ? x + width - rnd.Next(1, width / num) : (int)PointCollection[i].X + rnd.Next(-width / num, width / num + 1);
+                    int y1 = PointCollection[i].Y - 2 <= y ? y + rnd.Next(1, height / num) : PointCollection[i].Y + 2 >= y + height - 1 ? y + height - rnd.Next(1, height / num) : (int)PointCollection[i].Y + rnd.Next(-height / num, height / num + 1);
+                    PointCollection[i] = new System.Windows.Point(x1, y1);
                 }
             }
-
-            brush = new SolidColorBrush(Colors.White);
-            this.canvas = canvas;
-            Pen = null;
 
             isPointShape = true;
 
         }
+
+        public PointShape(int x, int y, int width, int height, Color fillColor, Color borderColor, PointCollection pointCollection)
+            :base(x,y,width) {
+            this.pointCollection = pointCollection;
+            this.fillColor = fillColor;
+            fillBrush = new SolidColorBrush(fillColor);
+            this.borderColor = borderColor;
+            borderBrush = new SolidColorBrush(borderColor);
+            this.pointCollection = pointCollection;
+        }
+
+
 
       
     }

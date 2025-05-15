@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -12,20 +13,20 @@ namespace WpfApp1.PointShapeFiles
     class MyCustomPolygon: PointShape
     {
 
-        public static int id = 4;
+        public static int id { get => 4; }
 
-        public MyCustomPolygon(Canvas canvas, int x, int y, int width)
-            : base(canvas, x, y, width)
+        public MyCustomPolygon(int x, int y, int width)
+            : base(x, y, width)
         {
             isPointShape = true;
            
         }
 
-        public MyCustomPolygon(Canvas canvas, int x, int y)
-            : base(canvas, x, y, 0)
+        public MyCustomPolygon(int x, int y)
+            : base(x, y, 0)
         {
-            pointCollection = new PointCollection();
-            pointCollection.Add(new System.Windows.Point(x , y));
+            PointCollection = new PointCollection();
+            PointCollection.Add(new System.Windows.Point(x , y));
             num++;
             isPointShape = true;
 
@@ -33,12 +34,12 @@ namespace WpfApp1.PointShapeFiles
 
         
 
-        override public System.Windows.UIElement draw()
+        override public System.Windows.UIElement draw(Canvas canvas)
         {
 
             Polygon tr = new Polygon();
 
-            tr.Points = pointCollection;
+            tr.Points = PointCollection;
             init(tr);
 
             canvas.Children.Add(tr);
@@ -47,18 +48,11 @@ namespace WpfApp1.PointShapeFiles
 
         }
 
-        public override Shape copy()
+        [JsonConstructor]
+        public MyCustomPolygon(int x, int y, int width, int height, Color fillColor, Color borderColor, PointCollection pointCollection)
+            : base(x, y, width, height, fillColor, borderColor, pointCollection)
         {
-            MyCustomPolygon clone = new MyCustomPolygon(canvas, x, y);
 
-            for (int i = 1; i < pointCollection.Count; i++)
-            {
-                clone.AddPoint((int)pointCollection[i].X, (int)pointCollection[i].Y);
-            }
-
-            clone.Settings = settings;
-
-            return clone;
         }
     }
 }

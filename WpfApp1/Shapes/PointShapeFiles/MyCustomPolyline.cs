@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -11,44 +12,35 @@ namespace WpfApp1.PointShapeFiles
 {
     class MyCustomPolyline : PointShape
     {
-        public static int id = 5;
-        
+        public static int id { get => 5; }
 
-        public MyCustomPolyline(Canvas canvas, int x, int y, int width)
-            : base(canvas, x, y, width)
+
+        public MyCustomPolyline(int x, int y, int width)
+            : base(x, y, width)
         {
-            pointCollection.RemoveAt(num - 1);
+            PointCollection.RemoveAt(num - 1);
             num--;
-
-
         }
 
-        public MyCustomPolyline(Canvas canvas, int x, int y)
-            : base(canvas, x, y, 0)
+        public MyCustomPolyline(int x, int y)
+            : base(x, y, 0)
         {
-            pointCollection = new PointCollection();
-            pointCollection.Add(new System.Windows.Point(x, y));
+            PointCollection = new PointCollection();
+            PointCollection.Add(new System.Windows.Point(x, y));
             num++;
         }
 
 
 
-        override public System.Windows.UIElement draw()
+        override public System.Windows.UIElement draw(Canvas canvas)
         {
 
             Polyline tr = new Polyline();
 
-            tr.Points = pointCollection;
-            brush = new SolidColorBrush(new Color
-            {
-                A = 0,
-                R = 0x27,
-                G = 0x27,
-                B = 0x27
-            });
-
-            settings.fillColor = brush;
+            tr.Points = PointCollection;
+            
             init(tr);
+
 
             canvas.Children.Add(tr);
 
@@ -56,18 +48,11 @@ namespace WpfApp1.PointShapeFiles
 
         }
 
-        public override Shape copy()
+        [JsonConstructor]
+        public MyCustomPolyline(int x, int y, int width, int height, Color fillColor, Color borderColor, PointCollection pointCollection)
+            : base(x, y, width, height, fillColor, borderColor, pointCollection)
         {
-            MyCustomPolyline clone = new MyCustomPolyline(canvas, x, y);
 
-            for (int i = 1; i<pointCollection.Count; i++)
-            {
-                clone.AddPoint((int)pointCollection[i].X, (int)pointCollection[i].Y);
-            }
-
-            clone.Settings = settings;
-
-            return clone;
         }
     }
 }

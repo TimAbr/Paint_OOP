@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using WpfApp1.PointShapeFiles;
+using WpfApp1.Shapes;
 using WpfApp1.Shortcuts.ShapeList;
 
 
@@ -31,13 +32,6 @@ namespace WpfApp1
         private static bool onDrawing = false;
 
         public static ShapeList shapeList = null;
-
-
-        public static void reDraw()
-        {
-
-        }
-
         
         public static void onMouseDown(MouseButtonEventArgs e)
         {
@@ -49,7 +43,7 @@ namespace WpfApp1
             }
         }
 
-        public static void onMouseMove(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
+        public static void onMouseMove(int xFinish, int yFinish, int id, ShapeSettings s)
         {
             if (onDrawing) {
                                 
@@ -58,30 +52,29 @@ namespace WpfApp1
                     shapeList.removeLast();
                 }
 
-                setShape(xFinish, yFinish, constructor, s);
+                setShape(xFinish, yFinish, id, s);
             }
 
         }
 
         public struct ShapeSettings
         {
-            public Brush borderColor;
-            public Brush fillColor;
+            public Color borderColor;
+            public Color fillColor;
             public double lineWidth;
             public bool isLast;
             public MouseButtonEventHandler mouseUp;
         }
 
-        private static void setShape(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
+        private static void setShape(int xFinish, int yFinish, int id, ShapeSettings s)
         {
-            Shape temp = (Shape)constructor.Invoke(new object[] { mainCanvas, xStart, yStart, xFinish, yFinish });
+            Shape temp = ShapeFactory.Instance().get(id, new object[] { xStart, yStart, xFinish, yFinish });
 
 
             temp.Settings = s;
 
 
-            shapeList.add(temp);
-            //shapeList.reDraw();
+            shapeList.add(temp);;
 
             curShape = temp;
 
@@ -89,11 +82,11 @@ namespace WpfApp1
 
     
 
-        public static void onMouseUp(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
+        public static void onMouseUp(int xFinish, int yFinish, int id, ShapeSettings s)
         {
             if (onDrawing)
             {
-                onMouseMove(xFinish, yFinish, constructor, s);
+                onMouseMove(xFinish, yFinish, id, s);
             }
             onDrawing = false;
             curShape = null;
@@ -111,48 +104,51 @@ namespace WpfApp1
             }
         }
 
-        public static void onPolyMouseMove(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
+        public static void onPolyMouseMove(int xFinish, int yFinish, int id, ShapeSettings s)
         {
             if (curShape != null)
             {
-                if (((PointShape)curShape).pointCollection.Count > 1)
+                if (((PointShape)curShape).PointCollection.Count > 1)
                 {
                     ((PointShape)curShape).RemoveLastPoint();
                 }
 
                 ((PointShape)curShape).AddPoint(xFinish, yFinish);
 
-               shapeList.update();
+               //shapeList.update();
             }
 
         }
 
 
 
-        public static void onPolyMouseUp(int xFinish, int yFinish, ConstructorInfo constructor, ShapeSettings s)
+        public static void onPolyMouseUp(int xFinish, int yFinish, int id, ShapeSettings s)
         {
             bool isEnd = false;
+
             if (curShape != null)
             {
                 isEnd = ((PointShape)Draw.curShape).AddPoint(xFinish, yFinish);
-                shapeList.update();
+                //shapeList.update();
             }
             else
             {
-                (Draw.curShape) = (PointShape)constructor.Invoke(new object[] { Draw.mainCanvas, xFinish, yFinish });
-                shapeList.add(curShape);
+                Shape temp = ShapeFactory.Instance().get(id, new object[] { xFinish, yFinish });
+                temp.Settings = s;
+                shapeList.add(temp);
+                curShape = temp;
             }
+
             curShape.Settings = s;
-            shapeList.update();
+            //shapeList.update();
 
             if (isEnd)
             {
                 s.isLast = true;
                 ((PointShape)Draw.curShape).RemoveLastPoint();
-                shapeList.update();
+                //shapeList.update();
                 
                 curShape = null;
-
             }
         
         }
