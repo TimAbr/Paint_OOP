@@ -135,9 +135,11 @@ namespace WpfApp1.UI
             }
         }
 
-        public static void setShapeButtons(WrapPanel shapeButtonList, Type[] shapeTypeList, ToggleButton[] shapeButtons, RoutedEventHandler click)
+        public static void setShapeButtons(WrapPanel shapeButtonList, Dictionary<int, Type> shapeTypeList, ToggleButton[] shapeButtons, RoutedEventHandler click)
         {
 
+            shapeButtonList.Children.Clear();
+            
             int shapeButtonSize = 20;
             int shapeButtonrFieldWidth = 141;
 
@@ -147,7 +149,10 @@ namespace WpfApp1.UI
             double horMargin = ((double)(shapeButtonrFieldWidth - numCol * shapeButtonSize)) / numCol;
             double vertMargin = 2;
 
-            for (int i = 0; i < shapeTypeList.Length; i++)
+            var keys = shapeTypeList.Keys.ToArray();
+
+
+            for (int i = 0; i < keys.Length; i++)
             {
                 ToggleButton el = new ToggleButton();
                 el.Height = shapeButtonSize;
@@ -166,7 +171,7 @@ namespace WpfApp1.UI
                 el.Margin = new Thickness(horMargin, vertMargin, 0, 0);
 
               
-                Shape temp = ShapeFactory.Instance().get(i, new object[] { 1, 1, 16 });
+                Shape temp = ShapeFactory.Instance().get(keys[i], new object[] { 1, 1, 16 });
                 
                 ShapeSettings s = new ShapeSettings();
                 s.mouseUp = null;

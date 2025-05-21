@@ -38,10 +38,20 @@ namespace WpfApp1.PointShapeFiles
             Polyline tr = new Polyline();
 
             tr.Points = PointCollection;
-            
+
+            var brush = new SolidColorBrush(new Color
+            {
+                A = 0,
+                R = 0x27,
+                G = 0x27,
+                B = 0x27
+            });
+
+            fillBrush = brush;
+
             init(tr);
 
-
+                
             canvas.Children.Add(tr);
 
             return tr;

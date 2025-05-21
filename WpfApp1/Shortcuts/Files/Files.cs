@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WpfApp1.Shapes;
 using WpfApp1.UI;
 
 namespace WpfApp1.Shortcuts.Files
@@ -83,6 +84,16 @@ namespace WpfApp1.Shortcuts.Files
             curFile = dialogs.saveFileDialog();
 
             save(shapeList);
+        }
+
+        public void addPlugin()
+        {
+            var fileName = dialogs.openFileDialog();
+
+            if (fileName != null)
+            {
+                ShapeFactory.Instance().addPlugins(fileName);
+            }
         }
 
     }

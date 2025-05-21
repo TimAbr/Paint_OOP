@@ -25,10 +25,17 @@ namespace WpfApp1.Shortcuts
         {
             filesController.save(Draw.shapeList);
         }
+
+        public void SaveAs()
+        {
+            filesController.saveAs(Draw.shapeList);
+        }
+
         public void Undo()
         {
             Draw.shapeList.undo();
         }
+
         public void Redo()
         {
             Draw.shapeList.redo();
@@ -36,6 +43,11 @@ namespace WpfApp1.Shortcuts
         public void NewFile()
         {
 
+        }
+
+        public void addPlugin()
+        {
+            filesController.addPlugin();
         }
     }
 }

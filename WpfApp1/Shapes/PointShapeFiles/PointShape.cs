@@ -10,7 +10,6 @@ using Windows.ApplicationModel.Chat;
 namespace WpfApp1.PointShapeFiles
 {
 
-    
     public abstract class PointShape: Shape
     {
         
@@ -21,8 +20,6 @@ namespace WpfApp1.PointShapeFiles
             double centerY = y + height / 2.0;
 
            
-
-
             List<System.Windows.Point> normalizedPoints = new List<System.Windows.Point>();
             double angleStep = 2 * Math.PI / num;
             double initialAngle = -Math.PI / 2;

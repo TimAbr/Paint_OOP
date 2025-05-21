@@ -16,12 +16,12 @@ using WpfApp1.Shortcuts;
 public partial class MainWindow : Window
 {
   
-    private ToggleButton[] shapeButtons;
-    private ToggleButton[] widthButtons;
+    private static ToggleButton[] shapeButtons;
+    private static ToggleButton[] widthButtons;
 
     private Shortcuts.Shortcuts shortcuts;
 
-    private int curShape = -1;
+    private static int curShape = -1;
     private int curWidth = 0;
 
     private double[] allStrokeWidths = { 1, 1.5, 2, 3, 5};
@@ -55,6 +55,15 @@ public partial class MainWindow : Window
         return i1.CompareTo(i2);
     }
 
+    static WrapPanel ShapeButtonList;
+
+    public static void updateShapeButtons()
+    {
+        shapeButtons = new ToggleButton[ShapeFactory.Instance().getTypeMap().Keys.Count];
+
+        FillUIElements.setShapeButtons(ShapeButtonList, ShapeFactory.Instance().getTypeMap(), shapeButtons, new RoutedEventHandler(ShapeButtonClick));
+    }
+
 
     public MainWindow()
     {
@@ -65,11 +74,10 @@ public partial class MainWindow : Window
         widthButtons = new ToggleButton[allStrokeWidths.Length];
         FillUIElements.setDropdownPopup(DropdownPopup,allStrokeWidths, widthButtons, new RoutedEventHandler(widthButtonClick), curWidth);
 
-        
+        ShapeButtonList = shapeButtonList;
 
-        shapeButtons = new ToggleButton[ShapeFactory.Instance().getTypeList().Length];
+        updateShapeButtons();
 
-        FillUIElements.setShapeButtons(shapeButtonList, ShapeFactory.Instance().getTypeList(), shapeButtons, new RoutedEventHandler(ShapeButtonClick));
         chosenEllipse = borderEllipse;
         chosenEllipse.Stroke = Brushes.LightSteelBlue;
         chosenEllipse.StrokeThickness = 2;
@@ -84,7 +92,7 @@ public partial class MainWindow : Window
         if (curShape >= 0)
         {
             shapeList.addUndo();
-            if (ShapeFactory.Instance().getTypeList()[curShape].IsSubclassOf(typeof(PointShape)))
+            if (ShapeFactory.Instance().getTypeMap()[curShape].IsSubclassOf(typeof(PointShape)))
             {
                 
             }
@@ -93,6 +101,11 @@ public partial class MainWindow : Window
                 Draw.onMouseDown(e);
             }
         }
+    }
+
+    private void addPluginCommand(object sender, RoutedEventArgs e)
+    {
+        shortcuts.addPlugin();
     }
 
     private void CanvasMouseUp(object sender, MouseButtonEventArgs e)
@@ -107,7 +120,7 @@ public partial class MainWindow : Window
             s.fillColor = ((fillEllipse.Fill) as SolidColorBrush).Color;
             s.lineWidth = allStrokeWidths[curWidth];
 
-            if (ShapeFactory.Instance().getTypeList()[curShape].IsSubclassOf(typeof(PointShape)))
+            if (ShapeFactory.Instance().getTypeMap()[curShape].IsSubclassOf(typeof(PointShape)))
             {
                 s.isLast = false;
                 
@@ -135,7 +148,7 @@ public partial class MainWindow : Window
             s.fillColor = ((fillEllipse.Fill) as SolidColorBrush).Color;
             s.lineWidth = allStrokeWidths[curWidth];
 
-            if (ShapeFactory.Instance().getTypeList()[curShape].IsSubclassOf(typeof(PointShape))) 
+            if (ShapeFactory.Instance().getTypeMap()[curShape].IsSubclassOf(typeof(PointShape))) 
             {
                 s.isLast = false;
                          
@@ -153,14 +166,14 @@ public partial class MainWindow : Window
 
     
 
-    private void ShapeButtonClick(object sender, RoutedEventArgs e)
+    private static void ShapeButtonClick(object sender, RoutedEventArgs e)
     {
-        var size = ShapeFactory.Instance().getTypeList().Length;
-        for (int i = 0; i<size; i++)
+        var keys = ShapeFactory.Instance().getTypeMap().Keys.ToArray();
+        for (int i = 0; i<keys.Length; i++)
         {
             if (shapeButtons[i]==(ToggleButton)sender)
             {
-                curShape = i;
+                curShape = keys[i];
                 shapeButtons[i].IsChecked=true;
             } else
             {
@@ -233,6 +246,12 @@ public partial class MainWindow : Window
     {
         shortcuts.NewFile();
     }
+
+    private void SaveAsCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+        shortcuts.SaveAs();
+    }
+
 
 
 }

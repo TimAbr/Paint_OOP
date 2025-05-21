@@ -28,12 +28,12 @@ namespace WpfApp1.Shortcuts.Files
             var res = "";
             var list = shapeList.getList();
 
-            Type[]? shapeTypeList = ShapeFactory.Instance().getTypeList();
+            var shapeTypeList = ShapeFactory.Instance().getTypeMap();
 
             
             for (int i = 0; i< list.Count(); i++)
             {
-                var id = (int)list[i].GetType().GetProperty("id", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+                var id = (int)list[i].GetType().GetProperty("id", BindingFlags.Static | BindingFlags.Public).GetValue(0);
                 res += id + "\n";
 
                 var json = JsonSerializer.Serialize(list[i], shapeTypeList[id], options);

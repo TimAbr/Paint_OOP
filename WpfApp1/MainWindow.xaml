@@ -15,6 +15,7 @@
         <CommandBinding Command="Undo" Executed="UndoCommandBinding_Executed"/>
         <CommandBinding Command="Redo" Executed="RedoCommandBinding_Executed"/>
         <CommandBinding Command="New" Executed="NewFileCommandBinding_Executed"/>
+        <CommandBinding Command="SaveAs" Executed="SaveAsCommandBinding_Executed"/>
     </Window.CommandBindings>
 
     <Window.InputBindings>
@@ -23,6 +24,7 @@
         <KeyBinding Key="Z" Modifiers="Ctrl" Command="Undo"/>
         <KeyBinding Key="Z" Modifiers="Ctrl+Shift" Command="Redo"/>
         <KeyBinding Key="N" Modifiers="Ctrl" Command="New"/>
+        <KeyBinding Key="S" Modifiers="Ctrl+Shift" Command="SaveAs"/>
     </Window.InputBindings>
 
     <Window.Resources>
@@ -102,12 +104,13 @@
                 <MenuItem Header="New file" Command="New" InputGestureText="Ctrl+N"></MenuItem>
                 <MenuItem Header="Open file" Command="Open" InputGestureText="Ctrl+O"></MenuItem>
                 <MenuItem Header="Save" Command="Save" InputGestureText="Ctrl+S"></MenuItem>
+                <MenuItem Header="Save as" Command="SaveAs" InputGestureText="Ctrl+Shift+S"></MenuItem>
                 <MenuItem Header="Exit"></MenuItem>
             </MenuItem>
             <MenuItem Height="21" Header="Edit"  Foreground="LightGray" Margin="5 0 5 0">
                 <MenuItem Header="Undo" Command="Undo" InputGestureText="Ctrl+Z"></MenuItem>
                 <MenuItem Header="Redo" Command="Redo" InputGestureText="Ctrl+Shift+Z"></MenuItem>
-                <MenuItem Header="Add plugin" ></MenuItem>
+                <MenuItem Header="Add plugin" Click="addPluginCommand"> </MenuItem>
             </MenuItem>
             <MenuItem Height="21" Header="View"  Foreground="LightGray" Margin="5 0 5 0"/>
         </Menu>
@@ -237,7 +240,7 @@
 
             </Border>
             <Border Grid.Row="2" Background="#202020" BorderThickness="0 1 0 0" BorderBrush="Black">
-                <TextBlock  FontSize="11" Foreground="LightGray"
+                <TextBlock  FontSize="11" Foreground="LightGray" Name="fileNameTextBlock"
                Margin="5 0 5 0" HorizontalAlignment="Center" VerticalAlignment="Center">Filename</TextBlock>
             </Border>
 
